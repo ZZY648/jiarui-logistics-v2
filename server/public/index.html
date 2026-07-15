@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>佳瑞物流管理系统 V2.0</title>
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
+<svg style="display:none" aria-hidden="true"><defs>
+  <!-- Professional SVG icons (20x20, 1.5px stroke) -->
+  <g id="ic-dashboard"><rect x="2" y="2" width="6.5" height="6.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="11.5" y="11.5" width="6.5" height="6.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="11.5" y="2" width="6.5" height="6.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="2" y="11.5" width="6.5" height="6.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/></g>
+  <g id="ic-doc"><path d="M5 2h7l4 4v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 17V3.5A1.5 1.5 0 0 1 5.5 2Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="9" x2="13" y2="9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="7" y1="12" x2="13" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="7" y1="15" x2="11" y2="15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></g>
+  <g id="ic-truck"><rect x="1" y="8" width="14" height="8" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="16" y="5" width="3.5" height="11" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="5" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/></g>
+  <g id="ic-currency"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="5.5" x2="10" y2="14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="7.5" y1="8.5" x2="12.5" y2="8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></g>
+  <g id="ic-people"><circle cx="10" cy="6.5" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 18.5a6.5 6.5 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></g>
+  <g id="ic-vehicle"><rect x="3" y="9" width="14" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 9V6a1.5 1.5 0 0 1 1.5-1.5h3L12 6v3" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6.5" cy="17.5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="13.5" cy="17.5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/></g>
+  <g id="ic-settings"><circle cx="10" cy="10" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 1.5v2.2m0 12.6v2.2M1.5 10h2.2m12.6 0h2.2M3.8 3.8l1.6 1.6m9.2 9.2 1.6 1.6m0-12-1.6 1.6M5.4 14.6l-1.6 1.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></g>
+  <g id="ic-pin"><circle cx="10" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 10c-3.5 4-5 7-5 8.5a5 5 0 0 0 10 0c0-1.5-1.5-4.5-5-8.5Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="7" r="1.2" fill="currentColor"/></g>
+  <g id="ic-plus"><line x1="10" y1="3" x2="10" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
+  <g id="ic-search"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="12.5" y1="12.5" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
+  <g id="ic-check"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 10.5 9 13l5.5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="ic-x"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="6.5" y1="6.5" x2="13.5" y2="13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="13.5" y1="6.5" x2="6.5" y2="13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></g>
+  <g id="ic-trash"><path d="M3 5.5h14M8 5.5V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M5.5 5.5l.8 12.5a1 1 0 0 0 1 .9h5.4a1 1 0 0 0 1-.9l.8-12.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></g>
+  <g id="ic-lock"><rect x="3.5" y="9" width="13" height="9.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 9V6a3.5 3.5 0 0 1 7 0v3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13.5" r="1.2" fill="currentColor"/></g>
+  <g id="ic-user"><circle cx="10" cy="6.5" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 19a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></g>
+  <g id="ic-key"><circle cx="10" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="15.5" y1="13.5" x2="19" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/></g>
+  <g id="ic-warn"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="5.5" x2="10" y2="11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14.5" r="1.2" fill="currentColor"/></g>
+  <g id="ic-logout"><path d="M7 5.5V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="10" x2="2" y2="10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><polyline points="5,7 2,10 5,13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="ic-arrow-right"><line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="13,5 18,10 13,15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+</defs></svg>
+<style>
+/* ============ Design System · 深色科技风 ============ */
+:root {
+  --c-primary:#06b6d4; --c-primary-light:#22d3ee; --c-primary-dark:#0891b2; --c-primary-bg:rgba(6,182,212,.1);
+  --c-accent:#8b5cf6; --c-accent-light:#a78bfa;
+  --c-success:#10b981; --c-success-bg:rgba(16,185,129,.12);
+  --c-warning:#f59e0b; --c-warning-bg:rgba(245,158,11,.12);
+  --c-danger:#ef4444; --c-danger-bg:rgba(239,68,68,.12);
+  --c-bg-0:#0a0e1a; --c-bg-1:#0f1525; --c-bg-2:#151c30; --c-bg-3:#1c263e;
+  --c-line:rgba(255,255,255,.07); --c-line-strong:rgba(255,255,255,.14);
+  --c-text:#e2e8f0; --c-text-dim:#94a3b8; --c-text-dimmer:#64748b;
+  /* 兼容旧代码中的 --c-gray-* 变量，映射到深色主题 */
+  --c-gray-50:rgba(255,255,255,.04); --c-gray-100:rgba(255,255,255,.06);
+  --c-gray-200:rgba(255,255,255,.12); --c-gray-300:rgba(255,255,255,.18);
+  --c-gray-400:#64748b; --c-gray-500:#94a3b8; --c-gray-600:#cbd5e1;
+  --c-gray-700:#e2e8f0; --c-gray-800:#f1f5f9; --c-gray-900:#f8fafc;
+  --c-glow-cyan:0 0 20px rgba(6,182,212,.35); --c-glow-violet:0 0 20px rgba(139,92,246,.35);
+  --radius-sm:8px; --radius:10px; --radius-lg:14px; --radius-xl:20px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow:0 4px 16px rgba(0,0,0,.35);
+  --shadow-md:0 8px 28px rgba(0,0,0,.4);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.5);
+  --shadow-xl:0 24px 72px rgba(0,0,0,.6);
+  --transition:0.2s ease;
+  --grad-primary:linear-gradient(135deg,#06b6d4,#3b82f6);
+  --grad-accent:linear-gradient(135deg,#8b5cf6,#ec4899);
+  --glass-bg:rgba(21,28,48,.72); --glass-border:rgba(255,255,255,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei','PingFang SC',sans-serif;background:var(--c-bg-0);color:var(--c-text);min-height:100vh;-webkit-font-smoothing:antialiased;line-height:1.5;font-size:14px;background-image:radial-gradient(rgba(6,182,212,.07) 1px,transparent 1px);background-size:32px 32px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(6,182,212,.4)}
+
+/* 通用表单元素暗色样式（覆盖非弹窗场景：调度页、轨迹搜索等） */
+input[type="text"],input[type="number"],input[type="password"],input[type="search"],select{background:rgba(10,16,28,.55);color:var(--c-text);border:1.5px solid var(--c-line);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;outline:none;transition:all var(--transition);font-family:inherit}
+input[type="text"]:focus,input[type="number"]:focus,input[type="search"]:focus,select:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(6,182,212,.15),0 0 16px rgba(6,182,212,.2);background:rgba(10,16,28,.8)}
+input[type="text"]:hover:not(:focus),input[type="number"]:hover:not(:focus),input[type="search"]:hover:not(:focus),select:hover:not(:focus){border-color:var(--c-line-strong)}
+input::placeholder{color:var(--c-text-dimmer)}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer}
+input[type="date"]::-webkit-datetime-edit-text,input[type="date"]::-webkit-datetime-edit-month-field,input[type="date"]::-webkit-datetime-edit-day-field,input[type="date"]::-webkit-datetime-edit-year-field{color:var(--c-text)}
+input[type="date"]{color-scheme:dark}
+
+.ic{width:18px;height:18px;display:inline-block;vertical-align:-4px;flex-shrink:0}
+.ic-sm{width:15px;height:15px;vertical-align:-3px}
+
+#toastContainer{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:12px 20px;border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:500;box-shadow:var(--shadow-md);pointer-events:auto;animation:slideIn .25s ease;max-width:380px;display:flex;align-items:center;gap:8px;cursor:pointer;backdrop-filter:blur(12px)}
+.toast.success{background:rgba(16,185,129,.95);box-shadow:0 8px 28px rgba(16,185,129,.3)}
+.toast.error{background:rgba(239,68,68,.95);box-shadow:0 8px 28px rgba(239,68,68,.3)}
+.toast.warning{background:rgba(245,158,11,.95);box-shadow:0 8px 28px rgba(245,158,11,.3)}
+.toast.info{background:rgba(6,182,212,.95);box-shadow:0 8px 28px rgba(6,182,212,.3)}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ============ 登录页 ============ */
+.login-page{display:flex;justify-content:center;align-items:center;min-height:100vh;background:var(--c-bg-0);position:relative;overflow:hidden}
+.login-page::before{content:'';position:absolute;top:-30%;right:-20%;width:700px;height:700px;background:radial-gradient(circle,rgba(6,182,212,.18),transparent 60%);border-radius:50%;animation:floatGlow 12s ease-in-out infinite}
+.login-page::after{content:'';position:absolute;bottom:-25%;left:-15%;width:550px;height:550px;background:radial-gradient(circle,rgba(139,92,246,.15),transparent 60%);border-radius:50%;animation:floatGlow 15s ease-in-out infinite reverse}
+@keyframes floatGlow{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-30px) scale(1.1)}}
+.login-box{background:var(--glass-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:44px 40px;border-radius:var(--radius-xl);box-shadow:var(--shadow-xl),0 0 60px rgba(6,182,212,.15);width:420px;position:relative;z-index:1;border:1px solid var(--glass-border)}
+.login-box::before{content:'';position:absolute;inset:0;border-radius:var(--radius-xl);padding:1px;background:linear-gradient(135deg,rgba(6,182,212,.4),transparent 40%,rgba(139,92,246,.4));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.login-box .brand{text-align:center;margin-bottom:28px}
+.login-box .brand .mark{font-size:38px;font-weight:800;background:var(--grad-primary);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-1px;line-height:1;filter:drop-shadow(0 0 16px rgba(6,182,212,.4))}
+.login-box .brand .sub{font-size:12px;color:var(--c-text-dimmer);margin-top:6px;letter-spacing:4px}
+.field{position:relative;margin-bottom:14px}
+.field svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--c-text-dimmer);width:18px;height:18px;transition:color var(--transition);z-index:1}
+.field input{width:100%;padding:12px 16px 12px 42px;border:1.5px solid var(--c-line);border-radius:var(--radius);font-size:14px;outline:none;background:rgba(15,21,37,.6);color:var(--c-text);transition:all var(--transition)}
+.field input:focus{border-color:var(--c-primary);box-shadow:0 0 0 4px rgba(6,182,212,.12),var(--c-glow-cyan);background:rgba(15,21,37,.9)}
+.field input:focus~svg,.field input:focus+svg{color:var(--c-primary)}
+.field input::placeholder{color:var(--c-text-dimmer)}
+.login-box>button{width:100%;padding:13px;background:var(--grad-primary);color:#fff;border:none;border-radius:var(--radius);font-size:15px;cursor:pointer;font-weight:600;letter-spacing:1px;transition:all var(--transition);margin-top:6px;box-shadow:0 4px 20px rgba(6,182,212,.35)}
+.login-box>button:hover{box-shadow:0 8px 32px rgba(6,182,212,.5);transform:translateY(-2px)}
+.login-box>button:active{transform:translateY(0)}
+.login-box .err{color:var(--c-danger);text-align:center;margin-top:10px;font-size:13px;min-height:18px}
+.demo-box{margin-top:18px;padding:16px;background:rgba(15,21,37,.5);border-radius:var(--radius);border:1px solid var(--c-line)}
+.demo-box .title{font-size:10px;color:var(--c-text-dimmer);margin-bottom:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700}
+.demo-box .chips{display:flex;gap:8px;flex-wrap:wrap}
+.demo-chip{padding:5px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all var(--transition);border:1.5px solid var(--c-line);background:transparent;color:var(--c-text-dim)}
+.demo-chip:hover{border-color:var(--c-primary);color:var(--c-primary-light);box-shadow:var(--c-glow-cyan)}
+.demo-chip.active{background:var(--grad-primary);color:#fff;border-color:transparent;box-shadow:0 2px 16px rgba(6,182,212,.4)}
+.demo-box .pwd{font-size:11px;color:var(--c-text-dimmer);margin-top:10px;display:flex;align-items:center;gap:4px;border-top:1px solid var(--c-line);padding-top:8px}
+.demo-box .pwd code{background:rgba(6,182,212,.15);padding:1px 6px;border-radius:3px;font-size:11px;color:var(--c-primary-light);letter-spacing:1px}
+.login-box .portal-link{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding:11px;background:transparent;border:1.5px solid var(--c-line);border-radius:var(--radius);font-size:13px;color:var(--c-text-dim);text-decoration:none;transition:all var(--transition);font-weight:500}
+.login-box .portal-link:hover{border-color:var(--c-accent);color:var(--c-accent-light);box-shadow:var(--c-glow-violet)}
+.login-box .portal-link svg{width:16px;height:16px}
+.role-tabs{display:flex;gap:4px;margin-bottom:18px;background:rgba(15,21,37,.5);border-radius:var(--radius);padding:3px}
+.role-tab{flex:1;text-align:center;padding:8px 6px;border-radius:var(--radius-sm);font-size:11px;font-weight:600;cursor:pointer;color:var(--c-text-dimmer);transition:all var(--transition);white-space:nowrap}
+.role-tab:hover{color:var(--c-text);background:rgba(255,255,255,.05)}
+.role-tab.active{background:var(--grad-primary);color:#fff;box-shadow:0 2px 12px rgba(6,182,212,.3)}
+
+/* ============ 主应用 ============ */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:240px;background:linear-gradient(180deg,var(--c-bg-1),var(--c-bg-0));flex-shrink:0;display:flex;flex-direction:column;position:relative;z-index:10;border-right:1px solid var(--c-line)}
+.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(6,182,212,.3),transparent)}
+.sidebar .brand{padding:20px 18px 16px;font-size:15px;font-weight:700;color:#fff;border-bottom:1px solid var(--c-line);display:flex;align-items:center;gap:10px;letter-spacing:.3px}
+.sidebar .brand .sb-logo{width:34px;height:34px;background:var(--grad-primary);border-radius:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;box-shadow:0 4px 16px rgba(6,182,212,.4)}
+.sidebar .nav{flex:1;padding:10px 8px;overflow-y:auto}
+.sidebar .nav-label{font-size:10px;color:var(--c-text-dimmer);text-transform:uppercase;letter-spacing:2px;font-weight:700;padding:14px 12px 5px}
+.sidebar .nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;color:var(--c-text-dim);text-decoration:none;font-size:13px;cursor:pointer;border-radius:var(--radius-sm);transition:all var(--transition);font-weight:500;margin-bottom:1px;position:relative}
+.sidebar .nav a svg{width:18px;height:18px;flex-shrink:0;opacity:.6;transition:all var(--transition)}
+.sidebar .nav a:hover{background:rgba(6,182,212,.08);color:var(--c-primary-light)}
+.sidebar .nav a:hover svg{opacity:1;color:var(--c-primary-light)}
+.sidebar .nav a.active{background:linear-gradient(90deg,rgba(6,182,212,.18),transparent);color:#fff;font-weight:600;box-shadow:inset 2px 0 0 var(--c-primary),var(--c-glow-cyan)}
+.sidebar .nav a.active svg{opacity:1;color:var(--c-primary-light)}
+.sidebar .sb-footer{padding:12px 14px;border-top:1px solid var(--c-line);display:flex;align-items:center;gap:10px;font-size:12px;color:var(--c-text-dim)}
+.sidebar .sb-footer .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--c-accent),var(--c-primary));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;font-size:12px;box-shadow:var(--c-glow-violet)}
+.sidebar .sb-footer .nm{font-weight:600;color:var(--c-text);line-height:1.2}
+.sidebar .sb-footer .rl{font-size:10px;color:var(--c-text-dimmer)}
+
+.main{flex:1;padding:24px 30px;overflow-y:auto;min-width:0;background:var(--c-bg-0)}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.header h2{font-size:21px;color:#fff;font-weight:700;background:linear-gradient(90deg,#fff,var(--c-primary-light));-webkit-background-clip:text;background-clip:text;color:transparent}
+.header .actions button{background:var(--glass-bg);backdrop-filter:blur(10px);border:1px solid var(--c-line);padding:7px 16px;border-radius:var(--radius-sm);cursor:pointer;font-size:12px;color:var(--c-text-dim);transition:all var(--transition);font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.header .actions button:hover{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.5);color:var(--c-danger);box-shadow:0 0 16px rgba(239,68,68,.25)}
+.header .actions button svg{width:16px;height:16px}
+
+.card{background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:14px;box-shadow:var(--shadow);border:1px solid var(--glass-border);transition:border-color var(--transition)}
+.card:hover{border-color:rgba(6,182,212,.2)}
+.card h3{font-size:15px;color:#fff;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--c-line);font-weight:600;display:flex;align-items:center;gap:8px}
+.card h3::before{content:'';display:inline-block;width:3px;height:16px;background:var(--grad-primary);border-radius:2px;box-shadow:var(--c-glow-cyan)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.stat-card{background:var(--glass-bg);backdrop-filter:blur(16px);padding:20px;border-radius:var(--radius-lg);box-shadow:var(--shadow);border:1px solid var(--glass-border);display:flex;align-items:center;gap:16px;transition:all var(--transition);cursor:default;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad-primary);opacity:0;transition:opacity var(--transition)}
+.stat-card:hover{border-color:rgba(6,182,212,.3);transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.stat-card:hover::before{opacity:1}
+.stat-card .si{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.stat-card .si.blue{background:rgba(6,182,212,.15);color:var(--c-primary-light);box-shadow:inset 0 0 20px rgba(6,182,212,.1)}
+.stat-card .si.green{background:rgba(16,185,129,.15);color:var(--c-success);box-shadow:inset 0 0 20px rgba(16,185,129,.1)}
+.stat-card .si.orange{background:rgba(245,158,11,.15);color:var(--c-warning);box-shadow:inset 0 0 20px rgba(245,158,11,.1)}
+.stat-card .si.red{background:rgba(239,68,68,.15);color:var(--c-danger);box-shadow:inset 0 0 20px rgba(239,68,68,.1)}
+.stat-card .si svg{width:22px;height:22px}
+.stat-card .sv .num{font-size:28px;font-weight:700;color:#fff;line-height:1.1}
+.stat-card .sv .lbl{font-size:12px;color:var(--c-text-dimmer);margin-top:3px;font-weight:500}
+
+.status-grid{display:flex;gap:10px;flex-wrap:wrap}
+.status-item{flex:1;min-width:85px;text-align:center;padding:14px 10px;background:rgba(15,21,37,.5);border-radius:var(--radius);border:1px solid var(--c-line);transition:all var(--transition)}
+.status-item:hover{background:rgba(6,182,212,.1);border-color:var(--c-primary);box-shadow:var(--c-glow-cyan)}
+.status-item .num{font-size:26px;font-weight:700;color:var(--c-primary-light)}
+.status-item .lbl{font-size:11px;color:var(--c-text-dimmer);margin-top:4px}
+
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:14px;height:150px;padding:0 4px}
+.chart-bar-col{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.chart-bar{width:100%;max-width:48px;border-radius:5px 5px 0 0;min-height:5px;background:linear-gradient(180deg,var(--c-primary-light),var(--c-primary));transition:height .35s ease;position:relative;box-shadow:0 0 12px rgba(6,182,212,.3)}
+.chart-bar:hover{filter:brightness(1.15);box-shadow:0 0 24px rgba(6,182,212,.5)}
+.chart-bar .bar-val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--c-primary-light)}
+.chart-label{font-size:10px;color:var(--c-text-dimmer);margin-top:6px}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:rgba(15,21,37,.6);padding:10px 14px;text-align:left;color:var(--c-text-dim);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--c-line-strong);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--c-line);color:var(--c-text);white-space:nowrap}
+tr:nth-child(even) td{background:rgba(15,21,37,.3)}
+tr:hover td{background:rgba(6,182,212,.08)!important}
+
+.badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px;line-height:1.6}
+.badge-blue{background:rgba(6,182,212,.15);color:var(--c-primary-light);border:1px solid rgba(6,182,212,.3)}
+.badge-green{background:rgba(16,185,129,.15);color:var(--c-success);border:1px solid rgba(16,185,129,.3)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--c-warning);border:1px solid rgba(245,158,11,.3)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--c-danger);border:1px solid rgba(239,68,68,.3)}
+.badge-gray{background:rgba(148,163,184,.12);color:var(--c-text-dim);border:1px solid var(--c-line)}
+
+.btn{padding:8px 16px;border:none;border-radius:var(--radius-sm);font-size:12px;cursor:pointer;font-weight:600;transition:all var(--transition);white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn svg{width:15px;height:15px}
+.btn-primary{background:var(--grad-primary);color:#fff;box-shadow:0 2px 12px rgba(6,182,212,.3)}
+.btn-primary:hover{box-shadow:0 4px 24px rgba(6,182,212,.5)}
+.btn-success{background:linear-gradient(135deg,var(--c-success),#059669);color:#fff;box-shadow:0 2px 12px rgba(16,185,129,.3)}
+.btn-success:hover{box-shadow:0 4px 24px rgba(16,185,129,.5)}
+.btn-warning{background:linear-gradient(135deg,var(--c-warning),#d97706);color:#fff;box-shadow:0 2px 12px rgba(245,158,11,.3)}
+.btn-warning:hover{box-shadow:0 4px 24px rgba(245,158,11,.5)}
+.btn-danger{background:transparent;color:var(--c-danger);border:1px solid rgba(239,68,68,.4)}
+.btn-danger:hover{background:rgba(239,68,68,.15);border-color:var(--c-danger);box-shadow:0 0 16px rgba(239,68,68,.3)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--c-text-dim);border:1px solid var(--c-line)}
+.btn-ghost:hover{background:rgba(255,255,255,.1);border-color:var(--c-line-strong)}
+td .btn + .btn, td .btn + button {margin-left:6px}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px}
+
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(5,8,18,.7);backdrop-filter:blur(8px);z-index:100;justify-content:center;align-items:flex-start;padding-top:5vh}
+.modal-bg.show{display:flex}
+.modal{background:var(--glass-bg);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-radius:var(--radius-xl);padding:0;width:740px;max-height:86vh;overflow-y:auto;box-shadow:var(--shadow-xl),0 0 80px rgba(6,182,212,.1);animation:modalIn .2s ease;border:1px solid var(--glass-border)}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(-12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{padding:20px 28px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--glass-bg);backdrop-filter:blur(28px);z-index:1;border-bottom:1px solid var(--c-line);border-left:4px solid var(--c-primary)}
+.modal-header h3{font-size:17px;color:#fff;font-weight:700}
+.modal-close{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.06);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;color:var(--c-text-dim);transition:all var(--transition);flex-shrink:0}
+.modal-close:hover{background:rgba(239,68,68,.2);color:var(--c-danger);transform:rotate(90deg)}
+.modal-body{padding:22px 28px 24px}
+.modal-footer{padding:0 28px 22px;display:flex;gap:10px;justify-content:flex-end}
+
+.form-section{margin-bottom:20px;padding:0;background:transparent}
+.form-section:last-child{margin-bottom:0}
+.form-section-label{font-size:13px;font-weight:700;color:var(--c-text);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--c-line);display:flex;align-items:center;gap:8px}
+.form-section-label::before{content:'';display:inline-block;width:3px;height:16px;background:var(--grad-primary);border-radius:2px;box-shadow:var(--c-glow-cyan)}
+.modal-body label{display:block;font-size:12px;color:var(--c-text-dim);margin-bottom:5px;font-weight:600;line-height:1.3}
+.modal-body label .required{color:var(--c-danger);margin-left:2px}
+.modal-body input,.modal-body select,.modal-body textarea{width:100%;padding:11px 14px;border:1.5px solid var(--c-line);border-radius:var(--radius-sm);font-size:13px;margin-bottom:0;outline:none;transition:all var(--transition);background:rgba(10,16,28,.65);color:var(--c-text);font-family:inherit;line-height:1.5}
+.modal-body input:focus,.modal-body select:focus,.modal-body textarea:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(6,182,212,.15),0 0 20px rgba(6,182,212,.2);background:rgba(10,16,28,.9)}
+.modal-body input:hover:not(:focus),.modal-body select:hover:not(:focus),.modal-body textarea:hover:not(:focus){border-color:var(--c-line-strong)}
+.modal-body input::placeholder{color:var(--c-text-dimmer);font-size:12px}
+.modal-body select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3e%3cpath d='M2 2l4 4 4-4' stroke='%2364748b' fill='none' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.modal-body textarea{resize:vertical;min-height:62px}
+.form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px 14px}
+.form-grid .col-3{grid-column:span 3}.form-grid .col-4{grid-column:span 4}.form-grid .col-6{grid-column:span 6}.form-grid .col-12{grid-column:span 12}
+.form-grid label{margin-bottom:4px}
+.form-grid input,.form-grid select,.form-grid textarea{margin-bottom:0}
+
+@media(max-width:768px){
+  .modal{width:95vw;max-height:88vh}
+  .form-grid{gap:8px 10px}
+}
+
+.status-flow{display:flex;align-items:center;gap:0;margin:16px 0;overflow-x:auto;padding:4px 0}
+.status-dot{padding:7px 16px;border-radius:20px;font-size:11px;background:rgba(255,255,255,.06);color:var(--c-text-dimmer);white-space:nowrap;font-weight:500;transition:all var(--transition);border:1px solid var(--c-line)}
+.status-dot.current{background:var(--grad-primary);color:#fff;font-weight:600;box-shadow:0 3px 18px rgba(6,182,212,.5);animation:pulse-dot 2.5s ease infinite;border-color:transparent}
+@keyframes pulse-dot{0%,100%{box-shadow:0 3px 18px rgba(6,182,212,.4)}50%{box-shadow:0 3px 28px rgba(6,182,212,.7)}}
+.status-arrow{color:var(--c-text-dimmer);font-size:11px;flex-shrink:0;padding:0 5px}
+.empty{text-align:center;color:var(--c-text-dimmer);padding:52px 20px;font-size:13px}
+.link{color:var(--c-primary-light);font-weight:600;text-decoration:none;cursor:pointer}.link:hover{text-decoration:underline;color:var(--c-primary)}
+.color-success{color:var(--c-success)}.color-danger{color:var(--c-danger)}.color-warning{color:var(--c-warning)}
+
+.filter-bar{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:16px 18px;background:rgba(15,21,37,.5);border-radius:var(--radius);margin-bottom:14px;border:1px solid var(--c-line)}
+.filter-bar .fg{display:flex;flex-direction:column;gap:4px}
+.filter-bar .fg label{font-size:10px;color:var(--c-text-dimmer);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.filter-bar .fg select{padding:8px 32px 8px 12px;border:1.5px solid var(--c-line);border-radius:var(--radius-sm);font-size:13px;background:rgba(10,14,26,.6);color:var(--c-text);outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3e%3cpath d='M1 1l4 4 4-4' stroke='%2364748b' fill='none' stroke-width='1.5' stroke-linecap='round'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 12px center;min-width:120px;transition:all var(--transition)}
+.filter-bar .fg select:hover{border-color:var(--c-line-strong)}
+.filter-bar .fg select:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(6,182,212,.1)}
+
+.dispatch-select{min-width:190px;max-width:250px;height:42px;padding:8px 36px 8px 12px;border:1.5px solid var(--c-line);border-radius:var(--radius-sm);font-size:13px;background-color:rgba(10,16,28,.92);color:var(--c-text);outline:none;cursor:pointer;appearance:auto;-webkit-appearance:menulist;position:relative;z-index:2}
+.dispatch-select:hover,.dispatch-select:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(6,182,212,.14)}
+.dispatch-select option{background:#111827;color:#e2e8f0;padding:8px}
+.dispatch-select:disabled{cursor:not-allowed;opacity:.65;color:var(--c-text-dimmer)}
+.dispatch-resource-note{width:100%;padding:10px 12px;border-radius:var(--radius-sm);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#fbbf24;font-size:12px;line-height:1.5}
+.dispatch-card-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+@media(max-width:760px){.dispatch-select{width:100%;max-width:none}.dispatch-card-row .btn{width:100%}}.coordinate-picker{border:1px solid var(--c-line);border-radius:var(--radius);overflow:hidden;background:rgba(10,16,28,.45)}
+.coordinate-toolbar{display:flex;gap:8px;flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--c-line)}
+.coordinate-toolbar button{min-height:40px}.coordinate-toolbar .active{background:var(--grad-primary);color:#fff;border-color:transparent}
+#waybillCoordinateMap{height:280px;width:100%;background:#dbeafe}.coordinate-help{padding:9px 12px;color:var(--c-text-dim);font-size:12px;line-height:1.55}.coordinate-status{padding:8px 12px;background:rgba(6,182,212,.08);font-size:12px;color:var(--c-primary-light)}.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,14,26,.85);z-index:9998;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:13px;color:var(--c-text-dim);gap:14px;backdrop-filter:blur(6px)}
+.loading-overlay.hidden{display:none}
+.spinner{display:inline-block;width:26px;height:26px;border:3px solid rgba(6,182,212,.2);border-top-color:var(--c-primary);border-radius:50%;animation:spin .55s linear infinite;box-shadow:0 0 16px rgba(6,182,212,.3)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:1024px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.sidebar{width:200px}.main{padding:16px 18px}.modal{width:95vw}}
+@media(max-width:600px){
+  .stats{grid-template-columns:1fr}
+  .sidebar{width:56px}
+  .sidebar .brand{font-size:0;padding:14px 8px;justify-content:center}
+  .sidebar .nav-label{display:none}
+  .sidebar .nav a{font-size:0;padding:14px 8px;justify-content:center}
+  .sidebar .nav a svg{width:22px;height:22px;opacity:.7}
+  .sidebar .sb-footer{justify-content:center;padding:10px}.sidebar .sb-footer .info{display:none}
+  .filter-bar{flex-direction:column;align-items:stretch}.filter-bar .fg select{width:100%}
+}
+</style>
+</head>
+<body>
+
+<div id="toastContainer"></div>
+<div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div>加载中...</div>
+
+<!-- ========== Login ========== -->
+<div id="loginPage" class="login-page">
+<div class="login-box">
+  <div class="brand">
+    <div class="mark">Jiarui</div>
+    <div class="sub">佳瑞物流管理平台</div>
+  </div>
+  <!-- 身份选择标签 -->
+  <div class="role-tabs">
+    <span class="role-tab active" onclick="switchRoleTab('staff',this)">员工登录</span>
+    <span class="role-tab" onclick="switchRoleTab('customer',this)">客户查询</span>
+    <span class="role-tab" onclick="switchRoleTab('driver',this)">司机端</span>
+  </div>
+  <div class="field">
+    <input id="loginUser" placeholder="用户名" value="admin" autocomplete="off">
+    <svg class="ic"><use href="#ic-user"/></svg>
+  </div>
+  <div class="field">
+    <input id="loginPass" type="password" placeholder="密码" value="jiarui123">
+    <svg class="ic"><use href="#ic-lock"/></svg>
+  </div>
+  <button onclick="doLogin()" id="loginBtn">登 录</button>
+  <div id="loginErr" class="err"></div>
+  <div class="demo-box" id="demoChipsContainer">
+    <div class="title">快捷切换账号</div>
+    <div class="chips" id="demoChips">
+      <span class="demo-chip active" onclick="fillLogin('admin')">admin</span>
+      <span class="demo-chip" onclick="fillLogin('dispatcher')">dispatcher</span>
+      <span class="demo-chip" onclick="fillLogin('finance')">finance</span>
+    </div>
+    <div class="pwd">密码 <code>jiarui123</code></div>
+  </div>
+</div>
+</div>
+
+<!-- ========== Main App ========== -->
+<div id="appPage" class="app" style="display:none">
+  <div class="sidebar">
+    <div class="brand"><div class="sb-logo">J</div>佳瑞物流</div>
+    <div class="nav" id="sidebarNav">
+      <div class="nav-label">业务操作</div>
+      <a onclick="navTo('dashboard')" id="nav-dashboard" class="active"><svg><use href="#ic-dashboard"/></svg>数据看板</a>
+      <a onclick="navTo('waybills')" id="nav-waybills"><svg><use href="#ic-doc"/></svg>运单管理</a>
+      <a onclick="navTo('dispatch')" id="nav-dispatch"><svg><use href="#ic-truck"/></svg>调度派车</a>
+      <a onclick="navTo('finance')" id="nav-finance"><svg><use href="#ic-currency"/></svg>费用对账</a>
+      <div class="nav-label">基础数据</div>
+      <a onclick="navTo('customer')" id="nav-customer"><svg><use href="#ic-people"/></svg>客户管理</a>
+      <a onclick="navTo('fleet')" id="nav-fleet"><svg><use href="#ic-vehicle"/></svg>车辆司机</a>
+      <div class="nav-label">系统</div>
+      <a onclick="navTo('system')" id="nav-system" style="display:none"><svg><use href="#ic-settings"/></svg>系统管理</a>
+      <a onclick="navTo('track')" id="nav-track"><svg><use href="#ic-pin"/></svg>轨迹追踪</a>
+    </div>
+    <div class="sb-footer">
+      <div class="av" id="sbAvatar">?</div>
+      <div class="info"><div class="nm" id="sidebarUserName"></div><div class="rl" id="sidebarUserRole"></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="header">
+      <h2 id="pageTitle">数据看板</h2>
+      <div class="actions">
+        <button onclick="doLogout()"><svg><use href="#ic-logout"/></svg>退出</button>
+      </div>
+    </div>
+    <div id="pageContent"></div>
+  </div>
+</div>
+
+<div id="modalBg" class="modal-bg"><div class="modal" id="modalBox"></div></div>
+
+<script src="js/api-service.js"></script>
+<script>
+// ==================== Toast ====================
+function toast(msg, type='info') {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast '+type;
+  el.textContent = msg;
+  el.onclick = () => el.remove();
+  container.appendChild(el);
+  setTimeout(() => { if(el.parentNode) el.remove(); }, 3500);
+}
+
+function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
+function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+
+// ==================== State ====================
+let token = localStorage.getItem('token');
+let currentUser = null;
+const ROLE_NAMES = {admin:'管理员',ops_manager:'运营主管',dispatcher:'调度员',finance_manager:'财务主管',finance:'财务',customer_service:'客服',boss:'老板',customer:'客户',driver:'司机'};
+const STATUS_WAYBILL = {draft:'草稿',confirmed:'已确认',scheduled:'已调度',loaded:'已装车',in_transit:'运输中',arrived:'已到达',signed:'已签收',completed:'已完成',cancelled:'已取消',exception:'异常'};
+const STATUS_BILLING = {draft:'草稿',sent:'已发送',confirmed:'已确认',invoiced:'已开票',paid:'已付款'};
+const VEHICLE_TYPES = {small_truck:'小货车',medium_truck:'中型货车',heavy_truck:'重型货车'};
+const SETTLE_TYPES = {monthly:'月结',per_trip:'趟结',prepaid:'预付'};
+const FUEL_TYPES = {gas:'汽油',diesel:'柴油'};
+const COST_TYPES = {fuel:'油费',toll:'过路费',driver_pay:'司机提成',loading:'装卸费',penalty:'罚款',other:'其他'};
+const VEHICLE_STATUS = {idle:'空闲',maintenance:'维修',en_route:'运输中'};
+const DRIVER_STATUS = {available:'空闲',on_trip:'出车中',leave:'休假'};
+const VERIFY_STATUS = {pending:'待审核',verified:'已审核'};
+const STOP_STATUS = {pending:'待到达',arrived:'已到达',completed:'已完成'};
+const STOP_TYPES = {pickup:'提货',delivery:'卸货'};
+
+function getStatusBadge(status) {
+  const map = {draft:'badge-gray',confirmed:'badge-blue',scheduled:'badge-blue',loaded:'badge-yellow',in_transit:'badge-yellow',arrived:'badge-green',signed:'badge-green',completed:'badge-green',cancelled:'badge-red',exception:'badge-red'};
+  return map[status]||'badge-gray';
+}
+
+if (token) {
+  JiaruiAPI.auth.me().then(r => {
+    if (r.code===200) { currentUser=r.data; showApp(); }
+    else localStorage.removeItem('token');
+  });
+}
+
+async function fetchAPI(url, options={}) {
+  const headers = { 'Content-Type':'application/json', ...(options.headers||{}) };
+  if (token) headers['Authorization'] = 'Bearer '+token;
+  const res = await fetch(url, { headers, ...options, body: options.body });
+  return res.json();
+}
+
+// ==================== Modal ====================
+function showFormModal(title, fields, onSubmit) {
+  const modal = document.getElementById('modalBox');
+  const hasSections = fields.some(f => f.section);
+  let fieldHtml = '';
+  if (hasSections) {
+    const sections = {}, noSection = [];
+    fields.forEach(f => {
+      if (f.section) { if (!sections[f.section]) sections[f.section] = []; sections[f.section].push(f); }
+      else noSection.push(f);
+    });
+    for (const [sec, secFields] of Object.entries(sections)) {
+      const secLabel = secFields[0]._sectionLabel || sec;
+      fieldHtml += `<div class="form-section"><div class="form-section-label">${secLabel}</div><div class="form-grid">`;
+      secFields.forEach(f => { fieldHtml += `<div class="col-${f.col||6}">${renderField(f)}</div>`; });
+      fieldHtml += `</div></div>`;
+    }
+    if (noSection.length > 0) {
+      fieldHtml += `<div class="form-grid">`;
+      noSection.forEach(f => { fieldHtml += `<div class="col-${f.col||12}">${renderField(f)}</div>`; });
+      fieldHtml += `</div>`;
+    }
+  } else {
+    fieldHtml = fields.map(f => renderField(f)).join('');
+  }
+  modal.innerHTML = `<div class="modal-header"><h3>${title}</h3><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">${fieldHtml}</div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="modalSubmitBtn">保存</button></div>`;
+  document.getElementById('modalSubmitBtn').onclick = async function() {
+    const btn = this;
+    if (btn.disabled) return;  // 防重复提交
+    btn.disabled = true;
+    btn.textContent = '保存中...';
+    const data = {};
+    fields.forEach(f => { data[f.name] = document.getElementById('f_'+f.name)?.value; });
+    if (data._id !== undefined) data._id = parseInt(data._id);
+    try { await onSubmit(data); }
+    finally { btn.disabled = false; btn.textContent = '保存'; }
+  };
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function renderField(f) {
+  let input;
+  if (f.type==='html') {
+    return f.html||'';
+  } else if (f.type==='select') {
+    input = `<select id="f_${f.name}">${(f.options||[]).map(o=>`<option value="${o.v}" ${(f.value||'')==o.v?'selected':''}>${o.l}</option>`).join('')}</select>`;
+  } else if (f.type==='textarea') {
+    input = `<textarea id="f_${f.name}" placeholder="${f.placeholder||''}">${f.value||''}</textarea>`;
+  } else if (f.type==='hidden') {
+    return `<input id="f_${f.name}" type="hidden" value="${f.value||''}">`;
+  } else {
+    input = `<input id="f_${f.name}" type="${f.type||'text'}" placeholder="${f.placeholder||''}" value="${f.value||''}">`;
+  }
+  return `<label>${f.label||''}${f.required?' <span class="required">*</span>':''}</label>${input}`;
+}
+
+function showConfirmModal(title, msg, onConfirm, danger) {
+  const modal = document.getElementById('modalBox');
+  const btnLabel = danger ? '确认删除' : '确认';
+  modal.innerHTML = `<div class="modal-header" style="border-left-color:${danger?'var(--c-danger)':'var(--c-primary)'}"><h3>${title}</h3><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body"><p style="color:var(--c-gray-600);margin:8px 0;line-height:1.6;font-size:14px">${msg}</p></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn ${danger?'btn-danger':'btn-primary'}" id="confirmYesBtn">${btnLabel}</button></div>`;
+  document.getElementById('confirmYesBtn').onclick = async function() {
+    this.disabled = true;
+    closeModal();
+    try { await onConfirm(); } catch(e) {}
+  };
+  document.getElementById('modalBg').classList.add('show');
+}
+
+// ==================== Login ====================
+let loginRole = 'staff'; // staff | customer | driver
+const demoAccounts = {
+  staff: [
+    {u:'admin',l:'管理员'},
+    {u:'dispatcher',l:'调度员'},
+    {u:'finance',l:'财务'}
+  ],
+  customer: [
+    {u:'customer1',l:'速达电子'}
+  ],
+  driver: [
+    {u:'driver1',l:'刘师傅'},
+    {u:'driver2',l:'黄师傅'}
+  ]
+};
+
+function switchRoleTab(role, el) {
+  loginRole = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  // 更新快捷账号
+  const chips = document.getElementById('demoChips');
+  const accounts = demoAccounts[role];
+  chips.innerHTML = accounts.map((a,i) => `<span class="demo-chip${i===0?' active':''}" onclick="fillLogin('${a.u}')">${a.u}</span>`).join('');
+  // 自动填第一个账号
+  if (accounts.length) { document.getElementById('loginUser').value = accounts[0].u; document.getElementById('loginPass').value = 'jiarui123'; }
+  // 更新按钮文字
+  document.getElementById('loginBtn').textContent = role==='staff'?'登 录':role==='customer'?'进入客户门户':'进入司机端';
+}
+function fillLogin(username) {
+  document.getElementById('loginUser').value = username;
+  document.getElementById('loginPass').value = 'jiarui123';
+  document.querySelectorAll('.demo-chip').forEach(c => {
+    c.classList.toggle('active', c.textContent.trim() === username);
+  });
+}
+async function doLogin() {
+  const username = document.getElementById('loginUser').value;
+  const password = document.getElementById('loginPass').value;
+  if (!username||!password) { document.getElementById('loginErr').textContent='请输入用户名和密码'; return; }
+  showLoading();
+  const r = await JiaruiAPI.auth.login(username, password);
+  hideLoading();
+  if (r.code===200) {
+    token = r.data.accessToken;
+    currentUser = r.data;
+    localStorage.setItem('token', token);
+    // 也存一份到 client_token 供客户门户用
+    localStorage.setItem('client_token', JSON.stringify(r.data));
+    toast('登录成功');
+    if (r.data.role==='customer') { location.href = '/client'; return; }
+    if (r.data.role==='driver') { location.href = '/driver'; return; }
+    showApp();
+  } else {
+    document.getElementById('loginErr').textContent = r.message;
+    toast(r.message||'登录失败', 'error');
+  }
+}
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+function doLogout() { localStorage.removeItem('token'); toast('已退出'); setTimeout(()=>location.reload(),400); }
+
+function showApp() {
+  if (currentUser.role==='customer') { location.href = '/client'; return; }
+  if (currentUser.role==='driver') { location.href = '/driver'; return; }
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('appPage').style.display='flex';
+  document.getElementById('sidebarUserName').textContent = currentUser.displayName;
+  document.getElementById('sidebarUserRole').textContent = ROLE_NAMES[currentUser.role]||'';
+  document.getElementById('sbAvatar').textContent = currentUser.displayName?.charAt(0)||'?';
+  const roleMenus = {
+    admin:['dashboard','waybills','dispatch','finance','customer','fleet','system','track'],
+    ops_manager:['dashboard','waybills','dispatch','finance','customer','fleet','track'],
+    dispatcher:['dashboard','waybills','dispatch','track'],
+    finance_manager:['dashboard','waybills','finance','customer','fleet','track'],
+    finance:['dashboard','waybills','finance','customer','track'],
+    customer_service:['dashboard','waybills','customer','track'],
+    boss:['dashboard','track']
+  };
+  const allowed = roleMenus[currentUser.role] || [];
+  document.querySelectorAll('#sidebarNav a').forEach(a => {
+    const page = a.getAttribute('onclick')?.match(/navTo\('(\w+)'\)/)?.[1];
+    a.style.display = (page && allowed.includes(page)) ? '' : 'none';
+  });
+  navTo('dashboard');
+}
+
+const PAGE_TITLES = {dashboard:'数据看板',waybills:'运单管理',dispatch:'调度派车',finance:'费用对账',customer:'客户管理',fleet:'车辆司机',system:'系统管理',track:'轨迹追踪'};
+const RENDERERS = {
+  dashboard: async () => await renderDashboard(),
+  waybills:  async () => await renderWaybillList(),
+  dispatch:  async () => await renderDispatch(),
+  finance:   async () => await renderFinance(),
+  customer:  async () => await renderCustomer(),
+  fleet:     async () => await renderFleet(),
+  system:    () => renderSystem(),
+  track:     () => renderTrackSearch()
+};
+
+async function navTo(page) {
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('nav-'+page)?.classList.add('active');
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[page];
+  document.getElementById('pageContent').innerHTML = '<div style="text-align:center;padding:50px;color:var(--c-gray-400)">加载中...</div>';
+  document.getElementById('pageContent').innerHTML = await RENDERERS[page]();
+}
+
+// ==================== Dashboard ====================
+
+async function renderDashboard() {
+  const r = await JiaruiAPI.dashboard.getStats();
+  if (r.code!==200) return '<div class="empty">加载失败</div>';
+  const d = r.data;
+
+  let chartsHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px"><div class="card" style="padding:14px 16px"><h3>近 7 天运输量</h3><div id="chartWeek" style="height:200px"></div></div><div class="card" style="padding:14px 16px"><h3>运单状态分布</h3><div id="chartStatus" style="height:200px"></div></div></div>';
+
+  const html = `
+  <div class="stats">
+    <div class="stat-card"><div class="si blue"><svg><use href="#ic-doc"/></svg></div><div class="sv"><div class="num">${d.todayCount}</div><div class="lbl">今日订单</div></div></div>
+    <div class="stat-card"><div class="si green"><svg><use href="#ic-truck"/></svg></div><div class="sv"><div class="num">${d.inTransit}</div><div class="lbl">运输中</div></div></div>
+    <div class="stat-card"><div class="si orange"><svg><use href="#ic-vehicle"/></svg></div><div class="sv"><div class="num">${d.idleVehicles}/${d.totalVehicles}</div><div class="lbl">空闲 / 总车辆</div></div></div>
+    <div class="stat-card"><div class="si red"><svg><use href="#ic-check"/></svg></div><div class="sv"><div class="num">${d.monthCompleted}</div><div class="lbl">本月完成</div></div></div>
+  </div>
+  ${chartsHtml}
+  <div class="card"><h3>近 30 天客户发货量 TOP</h3>
+    ${d.byCustomer?.length ? '<div id="chartCustomer" style="height:280px"></div>' : '<div class="empty">暂无数据</div>'}
+  </div>`;
+
+  // ECharts init after DOM render
+  setTimeout(() => {
+    const textColor = '#94a3b8';
+    // Week bar chart
+    const weekDom = document.getElementById('chartWeek');
+    if (weekDom && d.weekData?.length) {
+      const chart = echarts.init(weekDom);
+      chart.setOption({
+        tooltip: { trigger: 'axis' },
+        grid: { left: 40, right: 10, top: 10, bottom: 24 },
+        xAxis: { type: 'category', data: d.weekData.map(x => x.day.slice(5)), axisLabel: { color: textColor, fontSize: 11 }, axisLine: { lineStyle: { color: 'rgba(255,255,255,.1)' } } },
+        yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,.06)' } }, axisLabel: { color: textColor, fontSize: 10 } },
+        series: [{ type: 'bar', data: d.weekData.map(x => x.cnt), itemStyle: { borderRadius: [4, 4, 0, 0], color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{offset: 0, color: '#22d3ee'}, {offset: 1, color: '#06b6d4'}]) }, barWidth: 28 }]
+      });
+    }
+    // Status pie
+    const statusDom = document.getElementById('chartStatus');
+    if (statusDom && d.byStatus?.length) {
+      const chart = echarts.init(statusDom);
+      const colors = { draft: '#64748b', confirmed: '#3b82f6', scheduled: '#06b6d4', loaded: '#f59e0b', in_transit: '#f97316', arrived: '#22d3ee', signed: '#10b981', completed: '#059669', exception: '#ef4444', cancelled: '#94a3b8' };
+      chart.setOption({
+        tooltip: { trigger: 'item' },
+        legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { color: textColor, fontSize: 11 }, itemWidth: 10, itemHeight: 10 },
+        series: [{
+          type: 'pie', radius: ['45%', '75%'], center: ['35%', '50%'],
+          data: d.byStatus.map(s => ({ value: s.cnt, name: STATUS_WAYBILL[s.status] || s.status, itemStyle: { color: colors[s.status] || '#06b6d4' } })),
+          label: { show: false }, emphasis: { scaleSize: 8 }
+        }]
+      });
+    }
+    // Customer bar
+    const custDom = document.getElementById('chartCustomer');
+    if (custDom && d.byCustomer?.length) {
+      const chart = echarts.init(custDom);
+      const top = d.byCustomer.slice(0, 8);
+      chart.setOption({
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: 110, right: 40, top: 10, bottom: 20 },
+        xAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,.06)' } }, axisLabel: { color: textColor, fontSize: 10 } },
+        yAxis: { type: 'category', data: top.map(x => x.short_name).reverse(), axisLabel: { color: textColor, fontSize: 11 }, axisLine: { lineStyle: { color: 'rgba(255,255,255,.1)' } } },
+        series: [{ type: 'bar', data: top.map(x => x.cnt).reverse(), itemStyle: { borderRadius: [0, 4, 4, 0], color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{offset: 0, color: '#06b6d4'}, {offset: 1, color: '#8b5cf6'}]) }, barWidth: 16, label: { show: true, position: 'right', color: textColor, fontSize: 11 } }]
+      });
+    }
+  }, 300);
+
+  return html;
+}
+
+// ==================== Waybills ====================
+async function renderWaybillList() {
+  const r = await JiaruiAPI.waybill.list();
+  if (r.code!==200) return '<div class="empty">加载失败</div>';
+  const canCreate = ['admin','ops_manager','dispatcher'].includes(currentUser.role);
+  // Load customers for filter
+  const custResp = await JiaruiAPI.customer.list();
+  const custOpts = (custResp.data||[]).map(c=>`<option value="${c.id}">${c.short_name||c.company_name}</option>`).join('');
+  return `
+  <div class="action-bar" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    ${canCreate ? `<button class="btn btn-primary" onclick="showCreateWaybillModal()"><svg class="ic-sm"><use href="#ic-plus"/></svg>新建运单</button>` : ''}
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV()" title="导出CSV（Excel可打开）">📥 Excel</button>
+    <button class="btn btn-ghost btn-sm" onclick="window.print()" title="打印当前页面为PDF">🖨 PDF</button>
+  </div>
+  <div class="filter-bar">
+    <div class="fg"><label>运单号/货物</label><input id="filterKeyword" placeholder="搜索..." style="width:160px;padding:8px 10px;background:rgba(10,16,28,.55);border:1.5px solid var(--c-line);border-radius:var(--radius-sm);font-size:12px;color:var(--c-text);outline:none" oninput="refilter()"></div>
+    <div class="fg"><label>状态</label><select id="filterStatus" onchange="refilter()"><option value="">全部</option><option value="draft">草稿</option><option value="confirmed">已确认</option><option value="scheduled">已调度</option><option value="loaded">已装车</option><option value="in_transit">运输中</option><option value="arrived">已到达</option><option value="signed">已签收</option><option value="completed">已完成</option><option value="exception">异常</option><option value="cancelled">已取消</option></select></div>
+    <div class="fg"><label>客户</label><select id="filterCustomer" onchange="refilter()"><option value="">全部</option>${custOpts}</select></div>
+    <div class="fg"><label>起始日期</label><input type="date" id="filterDateFrom" style="padding:8px 10px;background:rgba(10,16,28,.55);border:1.5px solid var(--c-line);border-radius:var(--radius-sm);font-size:12px;color:var(--c-text);outline:none" onchange="refilter()"></div>
+    <div class="fg"><label>截止日期</label><input type="date" id="filterDateTo" style="padding:8px 10px;background:rgba(10,16,28,.55);border:1.5px solid var(--c-line);border-radius:var(--radius-sm);font-size:12px;color:var(--c-text);outline:none" onchange="refilter()"></div>
+  </div>
+  <div class="card"><h3>运单列表 <span style="font-weight:400;font-size:12px;color:var(--c-text-dimmer)" id="wbCount">(${(r.data||[]).length})</span></h3>
+  <div class="table-wrap"><table><tr><th>运单号</th><th>客户</th><th>货物</th><th>报价</th><th>状态</th><th>创建时间</th><th>操作</th></tr>
+  ${(r.data||[]).map(w=>`
+  <tr>
+    <td><a class="link" href="javascript:void(0)" onclick="showWaybillDetail(${w.id})">${w.waybill_no}</a></td>
+    <td>${w.customer_name||'-'}</td><td>${w.cargo_name}</td><td class="color-success"><b>¥${(w.quoted_fee||0).toFixed(0)}</b></td>
+    <td><span class="badge ${getStatusBadge(w.status)}">${STATUS_WAYBILL[w.status]||w.status}</span></td>
+    <td>${(w.created_at||'').slice(0,16)}</td>
+    <td>${getActionButtons(w)}</td>
+  </tr>`).join('')}
+  </table></div>${(r.data||[]).length===0?'<div class="empty">暂无匹配运单</div>':''}
+  </div>`;
+}
+
+async function refilter() {
+  const filters = {};
+  const status = document.getElementById('filterStatus')?.value;
+  const customerId = document.getElementById('filterCustomer')?.value;
+  const keyword = document.getElementById('filterKeyword')?.value;
+  const dateFrom = document.getElementById('filterDateFrom')?.value;
+  const dateTo = document.getElementById('filterDateTo')?.value;
+  if (status) filters.status = status;
+  if (customerId) filters.customer_id = customerId;
+  if (keyword) filters.keyword = keyword;
+  if (dateFrom) filters.date_from = dateFrom;
+  if (dateTo) filters.date_to = dateTo;
+  const r = await JiaruiAPI.waybill.list(Object.keys(filters).length ? filters : null);
+  if (r.code!==200) return;
+  const tbody = document.querySelector('#pageContent table tbody');
+  if (!tbody) return;
+  const countEl = document.getElementById('wbCount');
+  if (countEl) countEl.textContent = '('+(r.data||[]).length+')';
+  tbody.innerHTML = (r.data||[]).map(w=>`
+  <tr>
+    <td><a class="link" href="javascript:void(0)" onclick="showWaybillDetail(${w.id})">${w.waybill_no}</a></td>
+    <td>${w.customer_name||'-'}</td><td>${w.cargo_name}</td><td class="color-success"><b>¥${(w.quoted_fee||0).toFixed(0)}</b></td>
+    <td><span class="badge ${getStatusBadge(w.status)}">${STATUS_WAYBILL[w.status]||w.status}</span></td>
+    <td>${(w.created_at||'').slice(0,16)}</td>
+    <td>${getActionButtons(w)}</td>
+  </tr>`).join('') || '<tr><td colspan="7" class="empty">暂无匹配运单</td></tr>';
+}
+
+function exportCSV() {
+  const rows = [['运单号','客户','货物','报价','状态','创建时间']];
+  document.querySelectorAll('#pageContent table tbody tr').forEach(tr=>{
+    const cells = tr.querySelectorAll('td');
+    if (cells.length >= 6) rows.push([cells[0].textContent.trim(),cells[1].textContent.trim(),cells[2].textContent.trim(),cells[3].textContent.trim(),cells[4].textContent.trim(),cells[5].textContent.trim()]);
+  });
+  const csv = '\uFEFF' + rows.map(r=>r.map(c=>'"'+c.replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = '运单导出_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); toast('CSV已下载（可用Excel打开）','success');
+}
+
+function getActionButtons(w) {
+  let btns = `<button class="btn btn-primary btn-sm" onclick="showWaybillDetail(${w.id})">详情</button>`;
+  if (w.status==='confirmed' && ['admin','ops_manager','dispatcher'].includes(currentUser.role)) btns += `<button class="btn btn-success btn-sm" onclick="navTo('dispatch')">调度</button>`;
+  if ((w.status==='draft'||w.status==='cancelled') && ['admin','ops_manager'].includes(currentUser.role)) btns += `<button class="btn btn-danger btn-sm" onclick="deleteWaybill(${w.id},'${w.waybill_no}')"><svg class="ic-sm"><use href="#ic-trash"/></svg></button>`;
+  return btns;
+}
+
+let waybillCoordinateMap=null,coordinateTarget='pickup',coordinateMarkers={};
+function setCoordinateTarget(target){
+  coordinateTarget=target;
+  document.getElementById('pickPickupBtn')?.classList.toggle('active',target==='pickup');
+  document.getElementById('pickDeliveryBtn')?.classList.toggle('active',target==='delivery');
+  const status=document.getElementById('coordinateStatus');if(status)status.textContent=`当前正在选择${target==='pickup'?'提货点':'送货点'}，请在地图上点击真实位置。`;
+  const longitude=Number(document.getElementById(`f_${target}Longitude`)?.value),latitude=Number(document.getElementById(`f_${target}Latitude`)?.value);
+  if(waybillCoordinateMap&&Number.isFinite(longitude)&&Number.isFinite(latitude))waybillCoordinateMap.setView([latitude,longitude],15);
+}
+function setWaybillCoordinate(target,longitude,latitude,source){
+  const longitudeInput=document.getElementById(`f_${target}Longitude`),latitudeInput=document.getElementById(`f_${target}Latitude`);if(!longitudeInput||!latitudeInput)return;
+  longitudeInput.value=Number(longitude).toFixed(6);latitudeInput.value=Number(latitude).toFixed(6);
+  if(coordinateMarkers[target])waybillCoordinateMap.removeLayer(coordinateMarkers[target]);
+  const pickup=target==='pickup',color=pickup?'#2563eb':'#dc2626',label=pickup?'取':'达';
+  const icon=L.divIcon({html:`<div style="background:${color};color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.35)">${label}</div>`,className:'',iconSize:[30,30],iconAnchor:[15,15]});
+  coordinateMarkers[target]=L.marker([latitude,longitude],{icon}).addTo(waybillCoordinateMap);
+  const status=document.getElementById('coordinateStatus');if(status)status.textContent=`${pickup?'提货点':'送货点'}已设置：${Number(longitude).toFixed(6)}, ${Number(latitude).toFixed(6)}（${source}）`;
+  if(coordinateMarkers.pickup&&coordinateMarkers.delivery)waybillCoordinateMap.fitBounds(L.featureGroup(Object.values(coordinateMarkers)).getBounds().pad(.2),{maxZoom:16});
+}
+function initWaybillCoordinatePicker(){
+  const mapElement=document.getElementById('waybillCoordinateMap');if(!mapElement||typeof L==='undefined')return;
+  if(waybillCoordinateMap){waybillCoordinateMap.remove();coordinateMarkers={};}
+  waybillCoordinateMap=L.map(mapElement,{attributionControl:false,preferCanvas:true}).setView([22.8,113.8],8);
+  L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{subdomains:'1234',maxZoom:18,updateWhenIdle:true}).addTo(waybillCoordinateMap);
+  waybillCoordinateMap.on('click',event=>setWaybillCoordinate(coordinateTarget,event.latlng.lng,event.latlng.lat,'地图选点'));
+  setCoordinateTarget('pickup');setTimeout(()=>waybillCoordinateMap.invalidateSize(),60);
+}
+function useCurrentCoordinate(){
+  if(!navigator.geolocation){toast('当前浏览器不支持定位','error');return;}
+  toast('正在获取当前位置…','info');
+  navigator.geolocation.getCurrentPosition(position=>{const converted=wgs84ToGcj02(position.coords.longitude,position.coords.latitude);setWaybillCoordinate(coordinateTarget,converted.longitude,converted.latitude,'设备定位');waybillCoordinateMap?.setView([converted.latitude,converted.longitude],16);},error=>toast('当前位置获取失败：'+(error.message||'请检查定位权限'),'error'),{enableHighAccuracy:true,timeout:15000,maximumAge:5000});
+}
+function wgs84ToGcj02(longitude,latitude){
+  const pi=Math.PI,a=6378245,ee=.00669342162296594323;if(longitude<72.004||longitude>137.8347||latitude<.8293||latitude>55.8271)return{longitude,latitude};
+  const transformLat=(x,y)=>{let r=-100+2*x+3*y+.2*y*y+.1*x*y+.2*Math.sqrt(Math.abs(x));r+=(20*Math.sin(6*x*pi)+20*Math.sin(2*x*pi))*2/3;r+=(20*Math.sin(y*pi)+40*Math.sin(y/3*pi))*2/3;r+=(160*Math.sin(y/12*pi)+320*Math.sin(y*pi/30))*2/3;return r};
+  const transformLng=(x,y)=>{let r=300+x+2*y+.1*x*x+.1*x*y+.1*Math.sqrt(Math.abs(x));r+=(20*Math.sin(6*x*pi)+20*Math.sin(2*x*pi))*2/3;r+=(20*Math.sin(x*pi)+40*Math.sin(x/3*pi))*2/3;r+=(150*Math.sin(x/12*pi)+300*Math.sin(x/30*pi))*2/3;return r};
+  let dLat=transformLat(longitude-105,latitude-35),dLng=transformLng(longitude-105,latitude-35),radLat=latitude/180*pi,magic=Math.sin(radLat);magic=1-ee*magic*magic;const sqrtMagic=Math.sqrt(magic);dLat=dLat*180/((a*(1-ee))/(magic*sqrtMagic)*pi);dLng=dLng*180/(a/sqrtMagic*Math.cos(radLat)*pi);return{longitude:longitude+dLng,latitude:latitude+dLat};
+}
+
+async function showCreateWaybillModal() {
+  const custResp = await JiaruiAPI.customer.list();
+  const custOptions = (custResp.data||[]).filter(c=>c.status===1).map(c=>({v:String(c.id),l:c.short_name||c.company_name}));
+  showFormModal('新建运单', [
+    {name:'customerId',label:'客户',type:'select',required:true,options:custOptions,section:'cargo',_sectionLabel:'货物信息',col:6},
+    {name:'cargoName',label:'货物名称',required:true,section:'cargo',col:6},
+    {name:'cargoType',label:'货物类型',type:'select',options:[{v:'general',l:'普通货物'},{v:'fragile',l:'易碎品'},{v:'dangerous',l:'危险品'},{v:'cold_chain',l:'冷链'}],section:'cargo',col:4},
+    {name:'cargoWeightKg',label:'重量 (kg)',type:'number',required:true,section:'cargo',col:4},
+    {name:'cargoVolumeM3',label:'体积 (m³)',type:'number',section:'cargo',col:4},
+    {name:'cargoPieces',label:'件数',type:'number',section:'cargo',col:4},
+    {name:'cargoRemark',label:'备注',type:'textarea',section:'cargo',col:12},
+    {name:'timeRequirement',label:'时效要求',type:'select',options:[{v:'normal',l:'普通'},{v:'urgent',l:'加急'},{v:'appointed',l:'预约'}],section:'timing',_sectionLabel:'运输时效',col:6},
+    {name:'pickupName',label:'提货联系人',section:'pickup',_sectionLabel:'提货信息（起点）',col:6},{name:'pickupPhone',label:'提货电话',section:'pickup',col:6},
+    {name:'pickupProvince',label:'提货省份',value:'广东省',section:'pickup',col:3},{name:'pickupCity',label:'提货城市',value:'深圳市',section:'pickup',col:3},{name:'pickupDistrict',label:'提货区/县',value:'宝安区',section:'pickup',col:3},{name:'pickupAddress',label:'提货详细地址',value:'西乡固戍工业区A栋',section:'pickup',col:3},
+    {name:'pickupLongitude',label:'提货经度（高德）',type:'number',required:true,section:'pickup',col:3},{name:'pickupLatitude',label:'提货纬度（高德）',type:'number',required:true,section:'pickup',col:3},
+    {name:'deliveryName',label:'卸货联系人',section:'delivery',_sectionLabel:'卸货信息（终点）',col:6},{name:'deliveryPhone',label:'卸货电话',section:'delivery',col:6},
+    {name:'deliveryProvince',label:'卸货省份',value:'广东省',section:'delivery',col:3},{name:'deliveryCity',label:'卸货城市',value:'广州市',section:'delivery',col:3},{name:'deliveryDistrict',label:'卸货区/县',value:'黄埔区',section:'delivery',col:3},{name:'deliveryAddress',label:'卸货详细地址',value:'科学城科林路18号',section:'delivery',col:3},
+    {name:'deliveryLongitude',label:'卸货经度（高德）',type:'number',required:true,section:'delivery',col:3},{name:'deliveryLatitude',label:'卸货纬度（高德）',type:'number',required:true,section:'delivery',col:3},
+    {name:'coordinatePicker',type:'html',section:'coordinates',_sectionLabel:'地图精确选点（起点和终点均必须选择）',col:12,html:`<div class="coordinate-picker"><div class="coordinate-toolbar"><button type="button" class="btn btn-primary active" id="pickPickupBtn" onclick="setCoordinateTarget('pickup')">选择提货点</button><button type="button" class="btn btn-ghost" id="pickDeliveryBtn" onclick="setCoordinateTarget('delivery')">选择送货点</button><button type="button" class="btn btn-ghost" onclick="useCurrentCoordinate()">使用当前定位</button></div><div id="waybillCoordinateMap"></div><div class="coordinate-status" id="coordinateStatus">当前正在选择提货点，请在地图上点击真实位置。</div><div class="coordinate-help">地址文字用于业务展示，地图点位用于轨迹起终点。请放大地图后准确点击园区、仓库或门店的真实位置。</div></div>`}
+  ], async data => {
+    if(!data.cargoName){toast('请输入货物名称','warning');return;}if(!data.customerId){toast('请选择客户','warning');return;}
+    const weight=parseFloat(data.cargoWeightKg),pickupLongitude=parseFloat(data.pickupLongitude),pickupLatitude=parseFloat(data.pickupLatitude),deliveryLongitude=parseFloat(data.deliveryLongitude),deliveryLatitude=parseFloat(data.deliveryLatitude);
+    if(!Number.isFinite(weight)||weight<=0){toast('请输入正确的货物重量','warning');return;}
+    if(!Number.isFinite(pickupLongitude)||!Number.isFinite(pickupLatitude)){toast('请在地图上精确选择提货点','warning');setCoordinateTarget('pickup');return;}
+    if(!Number.isFinite(deliveryLongitude)||!Number.isFinite(deliveryLatitude)){toast('请在地图上精确选择送货点','warning');setCoordinateTarget('delivery');return;}
+    const body={customerId:parseInt(data.customerId),cargoName:data.cargoName,cargoType:data.cargoType,cargoWeightKg:weight,cargoVolumeM3:parseFloat(data.cargoVolumeM3)||0,cargoPieces:parseInt(data.cargoPieces)||0,timeRequirement:data.timeRequirement,cargoRemark:data.cargoRemark,pickupStops:[{contactName:data.pickupName,contactPhone:data.pickupPhone,province:data.pickupProvince,city:data.pickupCity,district:data.pickupDistrict,addressDetail:data.pickupAddress,longitude:pickupLongitude,latitude:pickupLatitude}],deliveryStops:[{contactName:data.deliveryName,contactPhone:data.deliveryPhone,province:data.deliveryProvince,city:data.deliveryCity,district:data.deliveryDistrict,addressDetail:data.deliveryAddress,longitude:deliveryLongitude,latitude:deliveryLatitude}]};
+    const result=await JiaruiAPI.waybill.create(body);if(result.code===200){toast('运单 '+result.data.waybill_no+' 已创建','success');closeModal();navTo('waybills');}else toast(result.message,'error');
+  });
+  setTimeout(initWaybillCoordinatePicker,80);
+}
+async function showWaybillDetail(id) {
+  showLoading();
+  const r = await JiaruiAPI.waybill.get(id);
+  hideLoading();
+  if (r.code!==200) { toast('运单不存在','error'); return; }
+  const w = r.data;
+  const statusFlow = ['draft','confirmed','scheduled','loaded','in_transit','arrived','signed','completed'];
+  const statusHtml = statusFlow.map((s,i) => `<span class="status-dot ${s===w.status?'current':''}">${STATUS_WAYBILL[s]}</span>${i<statusFlow.length-1?'<span class="status-arrow">▸</span>':''}`).join('');
+
+  const transitions = {
+    confirmed: [{to:'scheduled',label:'派车调度',needDispatch:true}],
+    scheduled: [{to:'loaded',label:'确认装车'},{to:'cancelled',label:'取消运单'},{to:'exception',label:'标记异常'}],
+    loaded: [{to:'in_transit',label:'确认发车'},{to:'exception',label:'标记异常'}],
+    in_transit: [{to:'arrived',label:'确认到达'},{to:'exception',label:'标记异常'}],
+    arrived: [{to:'signed',label:'确认签收'}],
+    signed: [{to:'completed',label:'完成归档'}]
+  };
+
+  let btnHtml = '';
+  if (['admin','ops_manager','dispatcher'].includes(currentUser.role)) {
+    if (w.status==='confirmed') btnHtml += `<button class="btn btn-success" onclick="quickSchedule(${w.id})">派车 (推荐)</button>`;
+    (transitions[w.status]||[]).forEach(t => {
+      if (!t.needDispatch) btnHtml += `<button class="btn ${t.to==='cancelled'?'btn-danger':t.to==='exception'?'btn-warning':'btn-success'}" onclick="transitionWaybill(${w.id},'${t.to}')">${t.label}</button>`;
+    });
+  }
+
+  const stops = (w.stops||[]).map(s => `<tr><td>${s.stop_seq}</td><td>${STOP_TYPES[s.stop_type]||s.stop_type}</td><td>${s.province||'-'}${s.city||''}${s.district||''}</td><td>${s.address_detail||''}</td><td>${s.contact_name||''} ${s.contact_phone||''}</td><td><span class="badge ${s.status==='completed'?'badge-green':s.status==='arrived'?'badge-blue':'badge-gray'}">${STOP_STATUS[s.status]||s.status}</span></td></tr>`).join('');
+  const canVerifyCost = ['admin','finance_manager','finance'].includes(currentUser.role);
+  const costs = (w.costs||[]).map(c => `<tr><td>${COST_TYPES[c.cost_type]||c.cost_type}</td><td class="color-success"><b>¥${c.cost_amount||0}</b></td><td>${c.cost_desc||''}</td><td><span class="badge ${c.verify_status==='verified'?'badge-green':'badge-yellow'}">${VERIFY_STATUS[c.verify_status]||c.verify_status}</span>${c.verify_status==='pending'&&canVerifyCost?` <button class="btn btn-success btn-sm" onclick="verifyCost(${c.id},${w.id})">审核</button>`:''}</td></tr>`).join('');
+
+  const modal = document.getElementById('modalBox');
+  modal.innerHTML = `
+  <div class="modal-header"><h3>运单详情 &mdash; ${w.waybill_no}</h3><button class="modal-close" onclick="closeModal()">&times;</button></div>
+  <div class="modal-body">
+    <p style="margin-bottom:12px">客户: <b>${w.customer_name||'-'}</b> &nbsp;|&nbsp; 货物: <b>${w.cargo_name}</b> &nbsp;|&nbsp; 报价: <b class="color-success">¥${(w.quoted_fee||0).toFixed(0)}</b></p>
+    <div class="status-flow">${statusHtml}</div>
+    ${btnHtml ? `<div style="margin:12px 0;display:flex;gap:6px;flex-wrap:wrap">${btnHtml}</div>` : ''}
+    <h4 style="margin:14px 0 6px;color:var(--c-gray-500)">站点信息</h4>
+    <div class="table-wrap"><table>${stops||'<tr><td colspan="6" class="empty">无站点</td></tr>'}</table></div>
+    <h4 style="margin:14px 0 6px;color:var(--c-gray-500)">费用明细</h4>
+    <div class="table-wrap"><table>${costs||'<tr><td colspan="4" class="empty">无费用记录</td></tr>'}</table></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" onclick="recordCost(${w.id})">记录费用</button>
+    <button class="btn btn-warning" onclick="calculateSnapshot(${w.id})">核算成本</button>
+    <button class="btn btn-ghost" onclick="closeModal()">关闭</button>
+  </div>`;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+async function transitionWaybill(id, status) {
+  const r = await JiaruiAPI.waybill.transition(id, status);
+  if (r.code===200) { toast(r.message,'success'); closeModal(); navTo('waybills'); }
+  else toast(r.message,'error');
+}
+
+async function deleteWaybill(id, no) {
+  showConfirmModal('删除运单', `确认删除运单「${no}」? 此操作不可恢复。`, async () => {
+    const r = await JiaruiAPI.waybill.delete(id);
+    if (r.code===200) { toast('已删除','success'); navTo('waybills'); }
+    else toast(r.message,'error');
+  }, true);
+}
+
+async function quickSchedule(id) {
+  const [rec, drivers] = await Promise.all([JiaruiAPI.dispatch.recommend(id), JiaruiAPI.dispatch.getDrivers()]);
+  if (!rec.data?.length) { toast('没有载重符合且空闲的车辆','warning'); return; }
+  if (!drivers.data?.length) { toast('没有可用司机','warning'); return; }
+  const best = rec.data[0];
+  const driver = drivers.data[0];
+  if (!confirm(`推荐车辆: ${best.plateNumber} (${VEHICLE_TYPES[best.vehicleType]||best.vehicleType})\n推荐司机: ${driver.name}\n评分: ${best.score}\n\n确认派车?`)) return;
+  const r = await JiaruiAPI.waybill.transition(id, 'scheduled', {vehicleId: best.vehicleId, driverId: driver.id});
+  if (r.code===200) { toast('派车成功','success'); closeModal(); navTo('waybills'); }
+  else toast(r.message,'error');
+}
+
+async function recordCost(waybillId) {
+  showFormModal('记录费用', [
+    {name:'costType',label:'费用类型',type:'select',options:[{v:'fuel',l:'油费'},{v:'toll',l:'过路费'},{v:'driver_pay',l:'司机提成'},{v:'loading',l:'装卸费'},{v:'penalty',l:'罚款'},{v:'other',l:'其他'}]},
+    {name:'amount',label:'金额 (元)',type:'number',required:true},
+    {name:'desc',label:'费用说明'}
+  ], async (data) => {
+    const r = await JiaruiAPI.cost.create({waybillId, costType:data.costType, costAmount:parseFloat(data.amount), costDesc:data.desc});
+    if (r.code===200) { toast('费用已记录','success'); closeModal(); showWaybillDetail(waybillId); }
+    else toast(r.message||'记录失败','error');
+  });
+}
+
+async function verifyCost(costId, waybillId) {
+  const r = await JiaruiAPI.cost.verify(costId);
+  if (r.code===200) { toast('费用已审核','success'); showWaybillDetail(waybillId); }
+  else toast(r.message||'审核失败','error');
+}
+
+async function calculateSnapshot(waybillId) {
+  showLoading();
+  const r = await JiaruiAPI.cost.snapshot(waybillId);
+  hideLoading();
+  if (r.code===200) {
+    const d = r.data;
+    const profit = parseFloat(d.profit);
+    const modal = document.getElementById('modalBox');
+    modal.innerHTML = `
+    <div class="modal-header"><h3>成本快照 &mdash; ${d.waybillNo}</h3><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body">
+      <table><tr><th>项目</th><th>金额</th></tr>
+      <tr><td>运费报价</td><td class="color-success"><b>¥${d.quotedFee}</b></td></tr>
+      <tr><td>直接成本</td><td>¥${d.directCost}</td></tr>
+      <tr><td>间接成本</td><td>¥${d.indirectCost}</td></tr>
+      <tr><td><b>总成本</b></td><td><b>¥${d.totalCost}</b></td></tr>
+      <tr><td style="font-weight:700;color:${profit>0?'var(--c-success)':'var(--c-danger)'}">利润</td><td style="font-weight:700;font-size:17px;color:${profit>0?'var(--c-success)':'var(--c-danger)'}">${profit>0?'+':''}¥${d.profit}</td></tr>
+      <tr><td>利润率</td><td>${d.profitMargin}</td></tr></table>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">关闭</button></div>`;
+    document.getElementById('modalBg').classList.add('show');
+  } else toast(r.message,'error');
+}
+
+// ==================== Dispatch ====================
+async function renderDispatch() {
+  const [waybills, vehicles, drivers] = await Promise.all([
+    JiaruiAPI.waybill.list(),
+    JiaruiAPI.dispatch.getVehicles(),
+    JiaruiAPI.dispatch.getDrivers()
+  ]);
+  const pending = (waybills.data||[]).filter(w => w.status==='confirmed');
+  const allVehicles = vehicles.data||[];
+  const idleVehicles = allVehicles.filter(vehicle=>vehicle.status==='idle');
+  const availableDrivers = drivers.data||[];
+  const canDispatch = ['admin','ops_manager','dispatcher'].includes(currentUser.role);
+  const globalWarning = !idleVehicles.length || !availableDrivers.length
+    ? `<div class="dispatch-resource-note">${!idleVehicles.length?'当前没有空闲车辆。':''}${!idleVehicles.length&&!availableDrivers.length?' ':''}${!availableDrivers.length?'当前没有可用司机。':''} 请先完成或取消占用资源的运单，或在“车辆司机”中增加可用资源。</div>`
+    : '';
+  return `
+  <div class="card"><h3>待调度运单 (${pending.length})</h3>
+  ${globalWarning}
+  ${pending.length===0 ? '<div class="empty">暂无待调度运单</div>' : pending.map(w => {
+    const eligibleVehicles = idleVehicles.filter(vehicle => Number(vehicle.max_load_kg||0) >= Number(w.cargo_weight_kg||0));
+    const canScheduleThis = canDispatch && eligibleVehicles.length>0 && availableDrivers.length>0;
+    const vehicleOptions = eligibleVehicles.length
+      ? `<option value="">请选择车辆</option>${eligibleVehicles.map(vehicle=>`<option value="${vehicle.id}">${vehicle.plate_number} · ${VEHICLE_TYPES[vehicle.vehicle_type]||vehicle.vehicle_type} · 载重${vehicle.max_load_kg||0}kg</option>`).join('')}`
+      : `<option value="">无满足载重的空闲车辆</option>`;
+    const driverOptions = availableDrivers.length
+      ? `<option value="">请选择司机</option>${availableDrivers.map(driver=>`<option value="${driver.id}">${driver.name} · ${driver.phone||'无电话'}</option>`).join('')}`
+      : `<option value="">无可用司机</option>`;
+    return `
+    <div style="border:1px solid var(--c-gray-200);border-radius:var(--radius);padding:14px;margin:10px 0;background:var(--c-gray-50)">
+      <div class="dispatch-card-row">
+        <b>${w.waybill_no}</b>
+        <span class="badge badge-blue">${w.cargo_name}</span>
+        <span style="font-size:12px;color:var(--c-text-dim)">重量 ${Number(w.cargo_weight_kg||0).toFixed(0)} kg</span>
+        <span class="color-success"><b>¥${(w.quoted_fee||0).toFixed(0)}</b></span>
+        <select id="veh_${w.id}" class="dispatch-select" aria-label="选择车辆" ${eligibleVehicles.length?'':'disabled'}>${vehicleOptions}</select>
+        <select id="drv_${w.id}" class="dispatch-select" aria-label="选择司机" ${availableDrivers.length?'':'disabled'}>${driverOptions}</select>
+        <button class="btn btn-success" onclick="doSchedule(${w.id})" ${canScheduleThis?'':'disabled'}>派车</button>
+        ${eligibleVehicles.length===0?'<div class="dispatch-resource-note">没有载重满足该运单的空闲车辆。</div>':''}
+      </div>
+    </div>`;
+  }).join('')}
+  </div>
+  <div class="card"><h3>车辆状态一览</h3>
+  <div class="table-wrap"><table><tr><th>车牌号</th><th>车型</th><th>状态</th><th>载重 (kg)</th><th>容积 (m³)</th></tr>
+  ${allVehicles.map(v => `
+  <tr><td><b>${v.plate_number}</b></td><td>${VEHICLE_TYPES[v.vehicle_type]||v.vehicle_type}</td>
+  <td><span class="badge ${v.status==='idle'?'badge-green':v.status==='maintenance'?'badge-red':'badge-yellow'}">${VEHICLE_STATUS[v.status]||v.status}</span></td>
+  <td>${v.max_load_kg}</td><td>${v.max_volume_m3}</td></tr>`).join('')}</table></div></div>`;
+}
+
+async function doSchedule(waybillId) {
+  const vehicleSelect = document.getElementById('veh_'+waybillId);
+  const driverSelect = document.getElementById('drv_'+waybillId);
+  const vehicleId = Number(vehicleSelect?.value);
+  const driverId = Number(driverSelect?.value);
+  if (!vehicleId) { toast('请先选择可用车辆','warning'); vehicleSelect?.focus(); return; }
+  if (!driverId) { toast('请先选择可用司机','warning'); driverSelect?.focus(); return; }
+  const r = await JiaruiAPI.waybill.transition(waybillId, 'scheduled', {vehicleId, driverId});
+  if (r.code===200) { toast('派车成功','success'); navTo('dispatch'); }
+  else toast(r.message,'error');
+}
+// ==================== Finance ====================
+async function renderFinance() {
+  const billings = await JiaruiAPI.billing.list();
+  const customers = await JiaruiAPI.customer.list();
+  const waybills2 = await JiaruiAPI.waybill.list();
+  const transitList = (waybills2.data||[]).filter(w => ['scheduled','loaded','in_transit','arrived','signed','completed'].includes(w.status));
+  const canBilling = ['admin','finance_manager','finance'].includes(currentUser.role);
+
+  let billingSection = `<div class="card"><h3>对账管理</h3>`;
+  if (canBilling) {
+    billingSection += `
+    <div class="filter-bar">
+      <div class="fg"><label>客户</label><select id="blCustomer">${(customers.data||[]).map(c=>`<option value="${c.id}">${c.short_name||c.company_name}</option>`).join('')}</select></div>
+      <div class="fg"><label>年份</label><select id="blYear"><option value="2026">2026</option><option value="2025">2025</option></select></div>
+      <div class="fg"><label>月份</label><select id="blMonth">${[...Array(12)].map((_,i)=>`<option value="${i+1}" ${i===new Date().getMonth()?'selected':''}>${i+1} 月</option>`).join('')}</select></div>
+      <button class="btn btn-primary" onclick="generateBilling()">生成对账单</button>
+    </div>`;
+  }
+  billingSection += (billings.data||[]).length===0 ? '<div class="empty">暂无对账单</div>' :
+  '<div class="table-wrap"><table><tr><th>账单编号</th><th>客户</th><th>账期</th><th>运单数</th><th>合计金额</th><th>状态</th><th>操作</th></tr>'+
+  billings.data.map(b => `<tr>
+    <td><b>${b.statement_no}</b></td><td>${b.customer_name||''}</td><td>${(b.period_start||'').slice(0,10)} ~ ${(b.period_end||'').slice(0,10)}</td>
+    <td>${b.waybill_count} 笔</td><td class="color-success"><b>¥${(b.total_amount||0).toFixed(0)}</b></td>
+    <td><span class="badge ${b.status==='confirmed'?'badge-green':b.status==='sent'?'badge-blue':'badge-gray'}">${STATUS_BILLING[b.status]||b.status}</span></td>
+    <td>
+    ${b.status==='draft'&&canBilling?`<button class="btn btn-primary btn-sm" onclick="sendBilling(${b.id})">发送</button>`:''}
+    ${b.status==='draft'&&canBilling?`<button class="btn btn-danger btn-sm" onclick="deleteBilling(${b.id},'${b.statement_no}')"><svg class="ic-sm"><use href="#ic-trash"/></svg></button>`:''}
+    ${b.status==='sent'&&canBilling?`<button class="btn btn-success btn-sm" onclick="confirmBilling(${b.id})">确认</button>`:''}
+    ${b.status==='confirmed'?`<span class="badge badge-green">待开票</span>`:''}
+    </td></tr>`).join('')+'</div>';
+  billingSection += `</div>`;
+
+  return `
+  ${billingSection}
+  <div class="card"><h3>运单费用管理</h3>
+  ${transitList.length===0 ? '<div class="empty">暂无可管理的运单</div>' :
+  '<div class="table-wrap"><table><tr><th>运单号</th><th>货物</th><th>报价</th><th>状态</th><th>操作</th></tr>'+
+  transitList.map(w => `<tr><td><b>${w.waybill_no}</b></td><td>${w.cargo_name}</td><td class="color-success"><b>¥${(w.quoted_fee||0).toFixed(0)}</b></td>
+  <td><span class="badge ${getStatusBadge(w.status)}">${STATUS_WAYBILL[w.status]}</span></td>
+  <td><button class="btn btn-primary btn-sm" onclick="recordCost(${w.id})">记费用</button>
+  <button class="btn btn-warning btn-sm" onclick="calculateSnapshot(${w.id})">核算</button></td></tr>`).join('')
+  }</div>`;
+}
+
+async function generateBilling() {
+  const r = await JiaruiAPI.billing.generate({
+    customerId: parseInt(document.getElementById('blCustomer').value),
+    year: parseInt(document.getElementById('blYear').value),
+    month: parseInt(document.getElementById('blMonth').value)
+  });
+  if (r.code===200) { toast('对账单 '+r.data.statement_no+' 已生成','success'); navTo('finance'); }
+  else toast(r.message,'error');
+}
+async function sendBilling(id) {
+  const r = await JiaruiAPI.billing.send(id);
+  if (r.code===200) { toast('已发送','success'); navTo('finance'); }
+  else toast(r.message||'发送失败','error');
+}
+async function confirmBilling(id) {
+  if (!confirm('确认对账单? 确认后不可撤销。')) return;
+  const r = await JiaruiAPI.billing.confirm(id);
+  if (r.code===200) { toast('已确认','success'); navTo('finance'); }
+  else toast(r.message||'确认失败','error');
+}
+async function deleteBilling(id, no) {
+  showConfirmModal('删除对账单', `确认删除对账单「${no}」?`, async () => {
+    const r = await JiaruiAPI.billing.delete(id);
+    if (r.code===200) { toast('已删除','success'); navTo('finance'); }
+    else toast(r.message,'error');
+  }, true);
+}
+
+// ==================== Customers ====================
+async function renderCustomer() {
+  const r = await JiaruiAPI.customer.list(true);
+  const canEdit = ['admin','finance_manager','finance'].includes(currentUser.role);
+  const isAdmin = currentUser.role==='admin';
+  return `
+  <div class="action-bar" style="margin-bottom:12px">${canEdit ? `<button class="btn btn-primary" onclick="showCustomerForm()"><svg class="ic-sm"><use href="#ic-plus"/></svg>新增客户</button>` : ''}</div>
+  <div class="card"><h3>客户列表 (${(r.data||[]).length})</h3>
+  <div class="table-wrap"><table><tr><th>编码</th><th>公司名称</th><th>简称</th><th>联系人</th><th>电话</th><th>结算</th><th>折扣</th><th>状态</th><th>操作</th></tr>
+  ${(r.data||[]).map(c => `
+  <tr><td>${c.customer_code}</td><td>${c.company_name}</td><td>${c.short_name||'-'}</td>
+  <td>${c.contact_name||''}</td><td>${c.contact_phone||''}</td>
+  <td><span class="badge badge-blue">${SETTLE_TYPES[c.settlement_type]||c.settlement_type}</span></td>
+  <td>${((c.discount_rate||1)*100).toFixed(0)}%</td>
+  <td><span class="badge ${c.status===1?'badge-green':'badge-red'}">${c.status===1?'正常':'停用'}</span></td>
+  <td>
+  ${canEdit ? `<button class="btn btn-primary btn-sm" onclick="showCustomerForm(${c.id})">编辑</button>` : ''}
+  <button class="btn btn-ghost btn-sm" onclick="showCustomerAddresses(${c.id},'${c.short_name||c.company_name}')">地址</button>
+  ${isAdmin&&c.status===1 ? `<button class="btn btn-danger btn-sm" onclick="deleteCustomer(${c.id},'${c.short_name||c.company_name}')">停用</button>` : ''}
+  ${isAdmin&&c.status===0 ? `<button class="btn btn-danger btn-sm" onclick="hardDeleteCustomer(${c.id},'${c.short_name||c.company_name}')">删除</button>` : ''}
+  </td></tr>`).join('')}
+  </table></div></div>`;
+}
+
+async function showCustomerForm(id) {
+  const isEdit = !!id;
+  let c = {};
+  if (isEdit) { const r = await JiaruiAPI.customer.get(id); if (r.code!==200) { toast('客户不存在','error'); return; } c = r.data; }
+  showFormModal(isEdit?'编辑客户':'新增客户', [
+    {name:'company_name',label:'公司全称',required:true,value:c.company_name||'', section:'company',_sectionLabel:'公司信息',col:6},
+    {name:'short_name',label:'简称',value:c.short_name||'', section:'company',col:6},
+    {name:'contact_name',label:'联系人',value:c.contact_name||'', section:'contact',_sectionLabel:'联系方式',col:6},
+    {name:'contact_phone',label:'联系电话',value:c.contact_phone||'', section:'contact',col:6},
+    {name:'province',label:'省份',value:c.province||'', section:'address',_sectionLabel:'地址信息',col:4},
+    {name:'city',label:'城市',value:c.city||'', section:'address',col:4},
+    {name:'district',label:'区/县',value:c.district||'', section:'address',col:4},
+    {name:'address_detail',label:'详细地址',value:c.address_detail||'', section:'address',col:12},
+    {name:'settlement_type',label:'结算方式',type:'select',value:c.settlement_type||'monthly',options:[{v:'monthly',l:'月结'},{v:'per_trip',l:'趟结'},{v:'prepaid',l:'预付'}], section:'finance',_sectionLabel:'财务条款',col:4},
+    {name:'credit_limit',label:'信用额度',type:'number',value:String(c.credit_limit||0), section:'finance',col:4},
+    {name:'discount_rate',label:'折扣率',type:'number',value:String(c.discount_rate||1.0), section:'finance',col:4},
+    {name:'status',label:'状态',type:'select',value:String(c.status||1),options:[{v:'1',l:'正常'},{v:'0',l:'停用'}], section:'st',_sectionLabel:'客户状态',col:6},
+    {name:'_id',type:'hidden',value:String(id||''), section:'st'}
+  ], async (data) => {
+    if (!data.company_name) { toast('请输入公司全称','warning'); return; }
+    const body = {};
+    ['company_name','short_name','contact_name','contact_phone','province','city','district','address_detail','settlement_type'].forEach(k=>{body[k]=data[k];});
+    body.credit_limit = parseFloat(data.credit_limit)||0;
+    body.discount_rate = parseFloat(data.discount_rate)||1.0;
+    body.status = parseInt(data.status)||1;
+    let r;
+    if (isEdit) r = await JiaruiAPI.customer.update(id, body);
+    else { body.address_name = data.short_name||data.company_name; r = await JiaruiAPI.customer.create(body); }
+    if (r.code===200) { toast(isEdit?'已更新':'已创建','success'); closeModal(); navTo('customer'); }
+    else toast(r.message,'error');
+  });
+}
+
+async function deleteCustomer(id, name) {
+  showConfirmModal('停用客户', `确认停用客户「${name}」?`, async () => {
+    const r = await JiaruiAPI.customer.delete(id);
+    if (r.code===200) { toast('已停用','success'); navTo('customer'); }
+    else toast(r.message,'error');
+  });
+}
+async function hardDeleteCustomer(id, name) {
+  showConfirmModal('删除客户', `确认彻底删除客户「${name}」? 仅无关联运单时可删除。`, async () => {
+    const r = await JiaruiAPI.customer.delete(id, true);
+    if (r.code===200) { toast('已删除','success'); navTo('customer'); }
+    else toast(r.message,'error');
+  }, true);
+}
+
+async function showCustomerAddresses(customerId, name) { /* unchanged, keep existing */ 
+  const r = await JiaruiAPI.customer.getAddresses(customerId);
+  const addrs = r.data||[];
+  const modal = document.getElementById('modalBox');
+  modal.innerHTML = `<div class="modal-header"><h3>地址簿 &mdash; ${name}</h3><button class="modal-close" onclick="closeModal()">&times;</button></div>
+  <div class="modal-body">
+  ${addrs.length===0?'<div class="empty">暂无地址</div>':
+  '<div class="table-wrap"><table><tr><th>名称</th><th>联系人</th><th>地址</th><th>默认</th><th>操作</th></tr>'+
+  addrs.map(a=>`<tr><td><b>${a.address_name}</b></td><td>${a.contact_name||''} ${a.contact_phone||''}</td>
+  <td>${a.province||''}${a.city||''}${a.district||''} ${a.address_detail||''}</td><td>${a.is_default?'是':''}</td>
+  <td><button class="btn btn-primary btn-sm" onclick="showAddressForm(${a.id},${customerId},'${(name||'').replace(/'/g,"\\'")}')">编辑</button>
+  ${currentUser.role==='admin'?`<button class="btn btn-danger btn-sm" onclick="deleteAddress(${a.id},${customerId},'${(name||'').replace(/'/g,"\\'")}')">删除</button>`:''}
+  </td></tr>`).join('')+'</table></div>'}
+  </div>
+  <div class="modal-footer">
+  <button class="btn btn-primary" onclick="showAddressForm(0,${customerId},'${(name||'').replace(/'/g,"\\'")}')">新增地址</button>
+  <button class="btn btn-ghost" onclick="closeModal()">关闭</button></div>`;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+async function showAddressForm(id, customerId, name) { /* unchanged */
+  const isEdit = !!id; let a = {};
+  if (isEdit) { const r = await JiaruiAPI.customer.getAddresses(customerId); a = (r.data||[]).find(x=>x.id===id)||{}; }
+  showFormModal(isEdit?'编辑地址':'新增地址', [
+    {name:'addressName',label:'地址名称',required:true,value:a.address_name||'', section:'basic',_sectionLabel:'基本信息',col:6},
+    {name:'contactName',label:'联系人',value:a.contact_name||'', section:'basic',col:6},
+    {name:'contactPhone',label:'联系电话',value:a.contact_phone||'', section:'basic',col:6},
+    {name:'province',label:'省份',value:a.province||'', section:'location',_sectionLabel:'地理位置',col:4},
+    {name:'city',label:'城市',value:a.city||'', section:'location',col:4},
+    {name:'district',label:'区/县',value:a.district||'', section:'location',col:4},
+    {name:'addressDetail',label:'详细地址',value:a.address_detail||'', section:'location',col:12},
+    {name:'isDefault',label:'设为默认',type:'select',value:a.is_default?'1':'0',options:[{v:'0',l:'否'},{v:'1',l:'是'}], section:'st',_sectionLabel:'设置',col:6},
+    {name:'_id',type:'hidden',value:String(id||''), section:'st'}
+  ], async (data) => {
+    if (!data.addressName) { toast('请输入地址名称','warning'); return; }
+    const body = {customerId,addressName:data.addressName,contactName:data.contactName,contactPhone:data.contactPhone,province:data.province,city:data.city,district:data.district,addressDetail:data.addressDetail,isDefault:parseInt(data.isDefault)};
+    let r; if (isEdit) r = await JiaruiAPI.address.update(id, body);
+    else r = await JiaruiAPI.address.create(body);
+    if (r.code===200) { toast(isEdit?'已更新':'已添加','success'); closeModal(); showCustomerAddresses(customerId, name); }
+    else toast(r.message,'error');
+  });
+}
+async function deleteAddress(id, customerId, name) {
+  showConfirmModal('删除地址', '确认删除该地址?', async () => {
+    const r = await JiaruiAPI.address.delete(id);
+    if (r.code===200) { toast('已删除','success'); showCustomerAddresses(customerId, name); }
+    else toast(r.message,'error');
+  });
+}
+
+// ==================== Fleet ====================
+async function renderFleet() {
+  const vehicles = await JiaruiAPI.dispatch.getVehicles();
+  const drivers = await JiaruiAPI.driver.list(true);
+  const canEdit = ['admin','ops_manager','dispatcher'].includes(currentUser.role);
+  const canDelete = ['admin','ops_manager'].includes(currentUser.role);
+  return `
+  <div class="action-bar" style="margin-bottom:12px">${canEdit?`<button class="btn btn-primary" onclick="showVehicleForm()"><svg class="ic-sm"><use href="#ic-plus"/></svg>新增车辆</button>`:''}</div>
+  <div class="card"><h3>车辆管理 (${(vehicles.data||[]).length})</h3>
+  <div class="table-wrap"><table><tr><th>编码</th><th>车牌号</th><th>车型</th><th>品牌</th><th>载重(kg)</th><th>容积(m³)</th><th>燃油</th><th>状态</th><th>操作</th></tr>
+  ${(vehicles.data||[]).map(v => `<tr>
+  <td>${v.vehicle_code}</td><td><b>${v.plate_number}</b></td><td>${VEHICLE_TYPES[v.vehicle_type]||v.vehicle_type}</td>
+  <td>${v.brand_model||''}</td><td>${v.max_load_kg}</td><td>${v.max_volume_m3}</td>
+  <td>${FUEL_TYPES[v.fuel_type]||v.fuel_type||''}</td>
+  <td><span class="badge ${v.status==='idle'?'badge-green':v.status==='maintenance'?'badge-red':'badge-yellow'}">${VEHICLE_STATUS[v.status]||v.status}</span></td>
+  <td>${canEdit?`<button class="btn btn-primary btn-sm" onclick="showVehicleForm(${v.id})">编辑</button>`:''}
+  ${canDelete?`<button class="btn btn-danger btn-sm" onclick="deleteVehicle(${v.id},'${v.plate_number}')">删除</button>`:''}</td></tr>`).join('')}
+  </table></div></div>
+  <div class="action-bar" style="margin-top:16px;margin-bottom:12px">${canEdit?`<button class="btn btn-primary" onclick="showDriverForm()"><svg class="ic-sm"><use href="#ic-plus"/></svg>新增司机</button>`:''}</div>
+  <div class="card"><h3>司机管理 (${(drivers.data||[]).length})</h3>
+  <div class="table-wrap"><table><tr><th>编码</th><th>姓名</th><th>电话</th><th>驾照</th><th>状态</th><th>操作</th></tr>
+  ${(drivers.data||[]).map(d => `<tr><td>${d.driver_code}</td><td><b>${d.name}</b></td><td>${d.phone||''}</td><td>${d.license_type||''}</td>
+  <td><span class="badge ${d.status==='available'?'badge-green':d.status==='leave'?'badge-red':'badge-yellow'}">${DRIVER_STATUS[d.status]||d.status}</span></td>
+  <td>${canEdit?`<button class="btn btn-primary btn-sm" onclick="showDriverForm(${d.id})">编辑</button>`:''}
+  ${canDelete?`<button class="btn btn-danger btn-sm" onclick="deleteDriver(${d.id},'${d.name}')">删除</button>`:''}</td></tr>`).join('')}
+  </table></div></div>`;
+}
+
+async function showVehicleForm(id) { /* unchanged logic */ 
+  const isEdit = !!id; let v = {};
+  if (isEdit) { const r = await JiaruiAPI.vehicle.get(id); if (r.code!==200) { toast('车辆不存在','error'); return; } v = r.data; }
+  showFormModal(isEdit?'编辑车辆':'新增车辆', [
+    {name:'plate_number',label:'车牌号',required:true,value:v.plate_number||'', section:'basic',_sectionLabel:'基本信息',col:4},
+    {name:'vehicle_type',label:'车型',type:'select',value:v.vehicle_type||'medium_truck',options:[{v:'small_truck',l:'小货车'},{v:'medium_truck',l:'中型货车'},{v:'heavy_truck',l:'重型货车'}], section:'basic',col:4},
+    {name:'brand_model',label:'品牌型号',value:v.brand_model||'', section:'basic',col:4},
+    {name:'max_load_kg',label:'最大载重(kg)',type:'number',value:String(v.max_load_kg||''), section:'spec',_sectionLabel:'载重规格',col:4},
+    {name:'max_volume_m3',label:'最大容积(m³)',type:'number',value:String(v.max_volume_m3||''), section:'spec',col:4},
+    {name:'length_m',label:'车长(m)',type:'number',value:String(v.length_m||''), section:'spec',col:4},
+    {name:'fuel_type',label:'燃油类型',type:'select',value:v.fuel_type||'diesel',options:[{v:'gas',l:'汽油'},{v:'diesel',l:'柴油'}], section:'ops',_sectionLabel:'运营参数',col:3},
+    {name:'gps_device_id',label:'GPS编号',value:v.gps_device_id||'', section:'ops',col:3},
+    {name:'monthly_depreciation',label:'月折旧(元)',type:'number',value:String(v.monthly_depreciation||''), section:'ops',col:3},
+    {name:'monthly_insurance',label:'月保险(元)',type:'number',value:String(v.monthly_insurance||''), section:'ops',col:3},
+    {name:'status',label:'状态',type:'select',value:v.status||'idle',options:[{v:'idle',l:'空闲'},{v:'maintenance',l:'维修'},{v:'en_route',l:'运输中'}], section:'st',_sectionLabel:'车辆状态',col:6},
+    {name:'_id',type:'hidden',value:String(id||''), section:'st'}
+  ], async (data) => {
+    if (!data.plate_number) { toast('请输入车牌号','warning'); return; }
+    const body = {}; ['plate_number','vehicle_type','brand_model','fuel_type','gps_device_id','status'].forEach(k=>{body[k]=data[k];});
+    ['max_load_kg','max_volume_m3','length_m','monthly_depreciation','monthly_insurance'].forEach(k=>{body[k]=parseFloat(data[k])||0;});
+    let r; if (isEdit) r = await JiaruiAPI.vehicle.update(id, body);
+    else r = await JiaruiAPI.vehicle.create(body);
+    if (r.code===200) { toast(isEdit?'已更新':'已添加','success'); closeModal(); navTo('fleet'); }
+    else toast(r.message,'error');
+  });
+}
+async function deleteVehicle(id, plate) {
+  showConfirmModal('删除车辆', `确认删除车辆「${plate}」?`, async () => {
+    const r = await JiaruiAPI.vehicle.delete(id);
+    if (r.code===200) { toast('已删除','success'); navTo('fleet'); } else toast(r.message,'error');
+  });
+}
+async function showDriverForm(id) { /* unchanged */
+  const isEdit = !!id; let d = {};
+  if (isEdit) { const r = await JiaruiAPI.driver.get(id); if (r.code!==200) { toast('司机不存在','error'); return; } d = r.data; }
+  showFormModal(isEdit?'编辑司机':'新增司机', [
+    {name:'name',label:'姓名',required:true,value:d.name||'',col:6},{name:'phone',label:'联系电话',value:d.phone||'',col:6},
+    {name:'license_type',label:'驾照类型',type:'select',value:d.license_type||'B2',options:[{v:'B2',l:'B2'},{v:'A2',l:'A2'}],col:6},
+    {name:'status',label:'状态',type:'select',value:d.status||'available',options:[{v:'available',l:'空闲'},{v:'on_trip',l:'出车中'},{v:'leave',l:'休假'}],col:6},
+    {name:'_id',type:'hidden',value:String(id||'')}
+  ], async (data) => {
+    if (!data.name) { toast('请输入司机姓名','warning'); return; }
+    let r; if (isEdit) r = await JiaruiAPI.driver.update(id, data);
+    else r = await JiaruiAPI.driver.create(data);
+    if (r.code===200) { toast(isEdit?'已更新':'已添加','success'); closeModal(); navTo('fleet'); } else toast(r.message,'error');
+  });
+}
+async function deleteDriver(id, name) {
+  showConfirmModal('删除司机', `确认删除司机「${name}」?`, async () => {
+    const r = await JiaruiAPI.driver.delete(id);
+    if (r.code===200) { toast('已删除','success'); navTo('fleet'); } else toast(r.message,'error');
+  });
+}
+
+// ==================== System ====================
+async function renderSystem() {
+  if (currentUser.role!=='admin') return '<div class="card"><div class="empty">仅管理员可访问</div></div>';
+  const r = await JiaruiAPI.user.list();
+  if (r.code!==200) return '<div class="card"><div class="empty">加载失败</div></div>';
+  return `
+  <div class="action-bar" style="margin-bottom:12px"><button class="btn btn-primary" onclick="showUserForm()"><svg class="ic-sm"><use href="#ic-plus"/></svg>新增用户</button></div>
+  <div class="card"><h3>用户管理 (${(r.data||[]).length})</h3>
+  <div class="table-wrap"><table><tr><th>用户名</th><th>显示名</th><th>角色</th><th>电话</th><th>状态</th><th>创建时间</th><th>操作</th></tr>
+  ${(r.data||[]).map(u => `<tr>
+  <td><b>${u.username}</b></td><td>${u.display_name}</td>
+  <td><span class="badge ${u.role==='admin'?'badge-red':u.role==='dispatcher'?'badge-blue':'badge-green'}">${ROLE_NAMES[u.role]||u.role}</span></td>
+  <td>${u.phone||''}</td>
+  <td><span class="badge ${u.status===1?'badge-green':'badge-red'}">${u.status===1?'正常':'禁用'}</span></td>
+  <td>${(u.created_at||'').slice(0,10)}</td>
+  <td>
+  <button class="btn btn-primary btn-sm" onclick="showUserForm(${u.id})">编辑</button>
+  <button class="btn btn-warning btn-sm" onclick="showResetPassword(${u.id},'${u.username}')">改密</button>
+  ${u.status===1&&u.id!==currentUser.userId?`<button class="btn btn-danger btn-sm" onclick="disableUser(${u.id},'${u.username}')">禁用</button>`:''}
+  ${u.status===0?`<button class="btn btn-success btn-sm" onclick="enableUser(${u.id},'${u.username}')">启用</button>`:''}
+  ${u.id!==currentUser.userId?`<button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id},'${u.username}')"><svg class="ic-sm"><use href="#ic-trash"/></svg></button>`:''}
+  </td></tr>`).join('')}
+  </table></div></div>`;
+}
+
+async function showUserForm(id) {
+  const isEdit = !!id; let u = {};
+  if (isEdit) { const users = await JiaruiAPI.user.list(); u = (users.data||[]).find(x=>x.id===id)||{}; if(!u.id){toast('加载失败','error');return;} }
+  showFormModal(isEdit?'编辑用户':'新增用户', [
+    {name:'username',label:'用户名',required:true,value:u.username||'', section:'account',_sectionLabel:'账号信息',col:6},
+    {name:'password',label:isEdit?'新密码 (留空不修改)':'密码',required:!isEdit,type:'password',placeholder:isEdit?'留空则不修改密码':'', section:'account',col:6},
+    {name:'displayName',label:'显示名',value:u.display_name||'', section:'account',col:6},
+    {name:'role',label:'角色',type:'select',value:u.role||'dispatcher',options:[{v:'admin',l:'管理员'},{v:'ops_manager',l:'运营主管'},{v:'dispatcher',l:'调度员'},{v:'finance_manager',l:'财务主管'},{v:'finance',l:'财务'},{v:'customer_service',l:'客服'},{v:'boss',l:'老板'},{v:'customer',l:'客户'},{v:'driver',l:'司机'}], section:'role',_sectionLabel:'角色权限',col:4},
+    {name:'phone',label:'电话',value:u.phone||'', section:'role',col:4},
+    {name:'status',label:'状态',type:'select',value:String(u.status!==undefined?u.status:1),options:[{v:'1',l:'正常'},{v:'0',l:'禁用'}], section:'role',col:4}
+  ], async (data) => {
+    if (!data.username) { toast('请输入用户名','warning'); return; }
+    if (!isEdit && !data.password) { toast('请输入密码','warning'); return; }
+    try {
+      let r;
+      if (isEdit) { const body = {username:data.username,display_name:data.displayName,role:data.role,phone:data.phone,status:parseInt(data.status)}; if(data.password) body.password = data.password; r = await JiaruiAPI.user.update(id, body); }
+      else { r = await JiaruiAPI.user.create({username:data.username,password:data.password,displayName:data.displayName,role:data.role,phone:data.phone}); }
+      if (r.code===200) { toast(isEdit?'用户已更新':'用户已创建','success'); closeModal(); navTo('system'); }
+      else toast(r.message,'error');
+    } catch(e) { toast('请求异常','error'); }
+  });
+}
+function showResetPassword(id, username) {
+  showFormModal('重置密码 &mdash; '+username, [{name:'password',label:'新密码',required:true,type:'password'}], async (data) => {
+    if (!data.password) { toast('请输入新密码','warning'); return; }
+    const r = await JiaruiAPI.user.resetPassword(id, data.password);
+    if (r.code===200) { toast('密码已重置','success'); closeModal(); } else toast(r.message,'error');
+  });
+}
+async function disableUser(id, username) {
+  showConfirmModal('禁用用户', `确认禁用用户「${username}」?`, async () => {
+    const r = await JiaruiAPI.user.delete(id);
+    if (r.code===200) { toast('已禁用','success'); navTo('system'); } else toast(r.message,'error');
+  });
+}
+async function enableUser(id, username) {
+  const r = await JiaruiAPI.user.enable(id);
+  if (r.code===200) { toast('已启用','success'); navTo('system'); } else toast(r.message,'error');
+}
+async function deleteUser(id, username) {
+  showConfirmModal('删除用户', `确认彻底删除用户「${username}」? 不可恢复!`, async () => {
+    const r = await JiaruiAPI.user.delete(id, true);
+    if (r.code===200) { toast('已删除','success'); navTo('system'); } else toast(r.message,'error');
+  }, true);
+}
+
+// ==================== Track ====================
+let lastTrackNo = '';
+function renderTrackSearch() {
+  // 切回来自动重新查询
+  if (lastTrackNo) { setTimeout(() => searchTrack(lastTrackNo), 150); }
+  return `
+  <div class="card"><h3>运单轨迹追踪</h3>
+  <div style="display:flex;gap:8px">
+    <input id="trackNo" placeholder="输入运单号，如 YD202606170001" style="flex:1" value="${lastTrackNo}">
+    <button class="btn btn-primary" onclick="searchTrack()"><svg class="ic-sm"><use href="#ic-search"/></svg>查询</button>
+  </div></div>
+  <div id="trackResult"></div>`;
+}
+
+let adminTrackMap = null, trackPollTimer = null;
+async function searchTrack(presetNo) {
+  const no = presetNo || document.getElementById('trackNo')?.value;
+  if (!no) { toast('请输入运单号','warning'); return; }
+  showLoading();
+  const r = await JiaruiAPI.waybill.track(no);
+  hideLoading();
+  if (r.code!==200) { document.getElementById('trackResult').innerHTML=`<div class="card"><div class="empty">${r.message}</div></div>`; lastTrackNo=''; return; }
+  const d = r.data, w = d.waybill, gps = d.gpsRecords||[], stops = d.stops||[], plannedRoute = d.plannedRoute||w.planned_route||[];
+  lastTrackNo = no;
+  if (adminTrackMap) { adminTrackMap.remove(); adminTrackMap = null; }
+  if (trackPollTimer) { clearInterval(trackPollTimer); trackPollTimer = null; }
+
+  let gpsTable = '';
+  if (gps.length) {
+    gpsTable = '<div class="card"><h3>司机实际定位</h3><div class="table-wrap"><table><tr><th>时间</th><th>经度</th><th>纬度</th><th>速度</th><th>来源</th></tr><tbody id="trackGpsTable">'+
+    gps.map(g=>`<tr style="${g.driver_name?'background:rgba(16,185,129,.08)!important':''}"><td>${(g.device_time||'').slice(0,19)}</td><td>${g.longitude?.toFixed(4)}</td><td>${g.latitude?.toFixed(4)}</td><td>${g.speed_kmh?.toFixed(0)||'-'} km/h</td><td>${g.driver_name?'<span style="color:#10b981">📱 '+g.driver_name+'</span>':'<span style="color:#64748b">系统</span>'}</td></tr>`).join('')+'</tbody></table></div></div>';
+  }
+
+  const stopsHtml = stops.map((s,i) => `
+  <div style="display:flex;align-items:center;padding:10px 12px;border-left:4px solid ${i===0?'var(--c-success)':i===stops.length-1?'var(--c-danger)':'var(--c-primary)'};margin-bottom:6px;background:var(--c-gray-50);border-radius:4px">
+    <div style="flex:1"><b>第${s.stop_seq}站:</b> ${STOP_TYPES[s.stop_type]||s.stop_type}</div>
+    <div style="color:var(--c-gray-500);font-size:12px">${s.province||''}${s.city||''}${s.district||''} ${s.address_detail||''}</div>
+    <span class="badge ${s.status==='completed'?'badge-green':s.status==='arrived'?'badge-blue':'badge-gray'}">${STOP_STATUS[s.status]||s.status}</span>
+  </div>`).join('');
+
+  document.getElementById('trackResult').innerHTML = `
+  <div class="card" style="padding:0">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--c-gray-100)"><h3 style="margin:0">${w.waybill_no} &mdash; ${w.cargo_name}</h3><p style="margin-top:6px;color:var(--c-gray-500);font-size:13px">状态: <span class="badge ${getStatusBadge(w.status)}">${STATUS_WAYBILL[w.status]}</span> &nbsp;|&nbsp; 报价: <b class="color-success">&yen;${(w.quoted_fee||0).toFixed(0)}</b></p></div>
+    <div style="padding:10px 20px;background:rgba(15,23,42,.55);font-size:12px;color:var(--c-text-dim);display:flex;gap:18px;flex-wrap:wrap"><span><b style="color:#38bdf8">虚线</b> 计划路线</span><span><b style="color:#10b981">实线</b> 司机实际轨迹</span><span>站点坐标来自运单地址</span></div><div id="adminTrackMap" style="width:100%;height:380px;background:#dbeafe"></div>
+    <div style="padding:14px 20px"><h4 style="color:var(--c-gray-500);margin-bottom:10px">运输路径</h4>${stopsHtml}</div>
+  </div>${gpsTable}`;
+
+  // Init map: planned route renders immediately; online tiles load independently.
+  setTimeout(() => {
+    const mapEl = document.getElementById('adminTrackMap');
+    if (!mapEl || typeof L === 'undefined') return;
+    adminTrackMap = L.map(mapEl, { attributionControl:false, preferCanvas:true }).setView([23.1,113.3],8);
+    const tileNotice = L.control({position:'bottomleft'});
+    tileNotice.onAdd = () => {
+      const element = L.DomUtil.create('div');
+      element.style.cssText = 'background:rgba(15,23,42,.9);color:#cbd5e1;padding:6px 9px;border-radius:7px;font-size:11px;display:none';
+      element.textContent = '底图网络较慢，路线和站点仍可正常查看';
+      return element;
+    };
+    tileNotice.addTo(adminTrackMap);
+    const tileLayer = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {subdomains:'1234',maxZoom:18,updateWhenIdle:true,keepBuffer:2,crossOrigin:true});
+    let loadedTile = false;
+    tileLayer.on('tileload', () => { loadedTile = true; });
+    tileLayer.on('tileerror', () => { const element=tileNotice.getContainer();if(element)element.style.display='block'; });
+    tileLayer.addTo(adminTrackMap);
+    setTimeout(() => { if(!loadedTile){const element=tileNotice.getContainer();if(element)element.style.display='block'} },2500);
+
+    const plannedPoints = plannedRoute.map(point => [Number(point.latitude),Number(point.longitude)]).filter(point => Number.isFinite(point[0])&&Number.isFinite(point[1]));
+    const actualPoints = gps.map(point => [Number(point.latitude),Number(point.longitude)]).filter(point => Number.isFinite(point[0])&&Number.isFinite(point[1]));
+    const stopPoints = [];
+    if(plannedPoints.length>1)L.polyline(plannedPoints,{color:'#38bdf8',weight:5,opacity:.8,dashArray:'10 8',lineCap:'round'}).addTo(adminTrackMap).bindTooltip('计划路线');
+    let actualLayer = actualPoints.length>1 ? L.polyline(actualPoints,{color:'#10b981',weight:4,opacity:.95,lineCap:'round'}).addTo(adminTrackMap).bindTooltip('司机实际轨迹') : null;
+
+    stops.forEach(stop => {
+      const latitude=Number(stop.latitude),longitude=Number(stop.longitude);
+      if(!Number.isFinite(latitude)||!Number.isFinite(longitude))return;
+      stopPoints.push([latitude,longitude]);
+      const pickup=stop.stop_type==='pickup',color=pickup?'#2563eb':'#dc2626',label=pickup?'取':'达';
+      const icon=L.divIcon({html:`<div style="background:${color};color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.35)">${label}</div>`,className:'',iconSize:[30,30],iconAnchor:[15,15]});
+      const fullAddress=`${stop.province||''}${stop.city||''}${stop.district||''} ${stop.address_detail||''}`;
+      const accuracy=stop.coordinate_source==='district_estimate'?'<br><span style="color:#f59e0b">区域估算位置</span>':'';
+      L.marker([latitude,longitude],{icon}).addTo(adminTrackMap).bindPopup(`<b>第${stop.stop_seq}站 · ${pickup?'提货':'送货'}</b><br>${fullAddress}${accuracy}`);
+    });
+
+    let currentMarker=null;
+    const pulseIcon=()=>L.divIcon({html:'<div style="width:16px;height:16px;background:#10b981;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 8px rgba(16,185,129,.18)"></div>',className:'',iconSize:[16,16],iconAnchor:[8,8]});
+    if(actualPoints.length){const current=actualPoints[actualPoints.length-1];currentMarker=L.marker(current,{icon:pulseIcon()}).addTo(adminTrackMap).bindPopup(`<b>司机最新位置</b><br>${gps[gps.length-1].device_time||''}`)}
+    const boundsPoints=[...plannedPoints,...actualPoints,...stopPoints];
+    if(boundsPoints.length)adminTrackMap.fitBounds(L.latLngBounds(boundsPoints).pad(.12),{maxZoom:13});
+    setTimeout(() => adminTrackMap&&adminTrackMap.invalidateSize(),50);
+
+    if(w.status==='in_transit'){
+      let pollCount=0,knownCount=gps.length;
+      trackPollTimer=setInterval(async()=>{
+        if(!document.getElementById('adminTrackMap')||pollCount>60){clearInterval(trackPollTimer);return}
+        const latest=await JiaruiAPI.waybill.track(no);
+        if(latest.code!==200){clearInterval(trackPollTimer);return}
+        const latestGps=latest.data.gpsRecords||[];
+        if(latestGps.length>knownCount&&adminTrackMap){
+          knownCount=latestGps.length;
+          const points=latestGps.map(point=>[Number(point.latitude),Number(point.longitude)]).filter(point=>Number.isFinite(point[0])&&Number.isFinite(point[1]));
+          if(actualLayer)adminTrackMap.removeLayer(actualLayer);
+          actualLayer=points.length>1?L.polyline(points,{color:'#10b981',weight:4,opacity:.95,lineCap:'round'}).addTo(adminTrackMap):null;
+          if(currentMarker)adminTrackMap.removeLayer(currentMarker);
+          if(points.length)currentMarker=L.marker(points[points.length-1],{icon:pulseIcon()}).addTo(adminTrackMap).bindPopup(`<b>司机最新位置</b><br>${latestGps[latestGps.length-1].device_time||''}`);
+          const table=document.getElementById('trackGpsTable');
+          if(table)table.innerHTML=latestGps.map(point=>`<tr><td>${(point.device_time||'').slice(0,19)}</td><td>${point.longitude?.toFixed(4)}</td><td>${point.latitude?.toFixed(4)}</td><td>${point.speed_kmh?.toFixed(0)||'-'} km/h</td><td><span style="color:#10b981">${point.driver_name||'司机'}</span></td></tr>`).join('');
+        }
+        pollCount++;
+      },10000);
+    }
+  },80);
+}
+
+function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
+let _modalDownTarget = null;
+document.getElementById('modalBg').addEventListener('mousedown', function(e) { _modalDownTarget = e.target; });
+document.getElementById('modalBg').addEventListener('mouseup', function(e) {
+  // 只在刻意点击遮罩时关闭（mousedown 和 mouseup 都在背景上）
+  if (_modalDownTarget === this && e.target === this) closeModal();
+  _modalDownTarget = null;
+});
+
+// Auto-fix: add viewBox to all rendering SVGs — uses MutationObserver for dynamic content
+(function(){
+  function fixSvg(svg) {
+    if (!svg.hasAttribute('viewBox') && !svg.closest('defs') && svg.style.display !== 'none') {
+      svg.setAttribute('viewBox', '0 0 20 20');
+    }
+  }
+  // Fix existing
+  document.querySelectorAll('svg').forEach(fixSvg);
+  // Watch for dynamically added SVGs (e.g. in modals)
+  new MutationObserver(mutations => {
+    mutations.forEach(m => m.addedNodes.forEach(node => {
+      if (node.nodeType === 1) {
+        if (node.tagName === 'svg' || node.querySelectorAll) {
+          if (node.tagName === 'svg') fixSvg(node);
+          (node.querySelectorAll ? node.querySelectorAll('svg') : []).forEach(fixSvg);
+        }
+      }
+    }));
+  }).observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script src="/vendor/echarts/echarts.min.js"></script>
+</body>
+</html>

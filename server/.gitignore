@@ -1,0 +1,6 @@
+node_modules/
+data.json
+data.backup-*.json
+.runtime/
+.env
+*.log

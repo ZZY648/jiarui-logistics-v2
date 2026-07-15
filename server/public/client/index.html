@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>佳瑞物流 — 客户门户</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<svg style="display:none"><defs>
+  <g id="ic-doc"><path d="M5 2h7l4 4v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 17V3.5A1.5 1.5 0 0 1 5.5 2Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="9" x2="13" y2="9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="7" y1="12" x2="13" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></g>
+  <g id="ic-currency"><circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="5.5" x2="10" y2="14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></g>
+  <g id="ic-user"><circle cx="10" cy="6.5" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 19a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></g>
+  <g id="ic-lock"><rect x="3.5" y="9" width="13" height="9.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 9V6a3.5 3.5 0 0 1 7 0v3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13.5" r="1.2" fill="currentColor"/></g>
+  <g id="ic-arrow-left"><line x1="18" y1="10" x2="2" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="7,5 2,10 7,15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="ic-pin"><circle cx="10" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 10c-3.5 4-5 7-5 8.5a5 5 0 0 0 10 0c0-1.5-1.5-4.5-5-8.5Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="10" cy="7" r="1.2" fill="currentColor"/></g>
+</defs></svg>
+<style>
+:root {
+  --c-primary:#06b6d4; --c-primary-light:#22d3ee; --c-primary-dark:#0891b2;
+  --c-accent:#8b5cf6; --c-accent-light:#a78bfa;
+  --c-success:#10b981; --c-success-bg:rgba(16,185,129,.12);
+  --c-warning:#f59e0b; --c-warning-bg:rgba(245,158,11,.12);
+  --c-danger:#ef4444; --c-danger-bg:rgba(239,68,68,.12);
+  --c-bg-0:#0a0e1a; --c-bg-1:#0f1525;
+  --c-line:rgba(255,255,255,.07); --c-line-strong:rgba(255,255,255,.14);
+  --c-text:#e2e8f0; --c-text-dim:#94a3b8; --c-text-dimmer:#64748b;
+  --c-gray-50:rgba(255,255,255,.04); --c-gray-100:rgba(255,255,255,.06);
+  --c-gray-200:rgba(255,255,255,.12); --c-gray-400:#64748b;
+  --c-gray-500:#94a3b8; --c-gray-600:#cbd5e1; --c-gray-700:#e2e8f0;
+  --c-glow-cyan:0 0 20px rgba(6,182,212,.35);
+  --radius-sm:8px; --radius:10px; --radius-lg:14px; --radius-xl:20px;
+  --shadow:0 4px 16px rgba(0,0,0,.35);
+  --shadow-md:0 8px 28px rgba(0,0,0,.4);
+  --shadow-lg:0 16px 48px rgba(0,0,0,.5);
+  --shadow-xl:0 24px 72px rgba(0,0,0,.6);
+  --transition:0.2s ease;
+  --grad-primary:linear-gradient(135deg,#06b6d4,#3b82f6);
+  --glass-bg:rgba(21,28,48,.72); --glass-border:rgba(255,255,255,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei','PingFang SC',sans-serif;background:var(--c-bg-0);color:var(--c-text);min-height:100vh;line-height:1.5;font-size:14px;-webkit-font-smoothing:antialiased;background-image:radial-gradient(rgba(6,182,212,.07) 1px,transparent 1px);background-size:32px 32px}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(6,182,212,.4)}
+input[type="text"],input[type="number"],input[type="password"],select{background:rgba(10,16,28,.55);color:var(--c-text);border:1.5px solid var(--c-line);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;outline:none;transition:all var(--transition);font-family:inherit}
+input[type="text"]:focus,input[type="number"]:focus,select:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(6,182,212,.15);background:rgba(10,16,28,.8)}
+input::placeholder{color:var(--c-text-dimmer)}
+select option{background:var(--c-bg-1);color:var(--c-text)}
+
+#toastContainer{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:12px 20px;border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:500;box-shadow:var(--shadow-md);pointer-events:auto;animation:slideIn .25s ease;max-width:360px;cursor:pointer;backdrop-filter:blur(12px)}
+.toast.success{background:rgba(16,185,129,.95);box-shadow:0 8px 28px rgba(16,185,129,.3)}
+.toast.error{background:rgba(239,68,68,.95);box-shadow:0 8px 28px rgba(239,68,68,.3)}
+.toast.info{background:rgba(6,182,212,.95);box-shadow:0 8px 28px rgba(6,182,212,.3)}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+.app-header{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--glass-border);box-shadow:var(--shadow);position:sticky;top:0;z-index:10}
+.app-header .brand{font-size:16px;font-weight:700;color:#fff}
+.app-header .brand span{background:var(--grad-primary);-webkit-background-clip:text;background-clip:text;color:transparent}
+.app-header .user{font-size:12px;color:var(--c-text-dim);display:flex;align-items:center;gap:8px}
+.app-header .user button{background:transparent;border:1px solid var(--c-line);padding:5px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:12px;color:var(--c-text-dim);transition:all var(--transition)}
+.app-header .user button:hover{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.5);color:var(--c-danger);box-shadow:0 0 12px rgba(239,68,68,.2)}
+.container{max-width:1200px;margin:0 auto;padding:0 20px 20px}
+
+.tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--glass-bg);backdrop-filter:blur(12px);border-radius:var(--radius);padding:4px;box-shadow:var(--shadow);border:1px solid var(--glass-border)}
+.tab{padding:9px 20px;border:none;background:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--c-text-dim);font-weight:500;transition:all var(--transition)}
+.tab:hover{color:var(--c-primary-light);background:rgba(6,182,212,.08)}
+.tab.active{background:var(--grad-primary);color:#fff;box-shadow:0 2px 16px rgba(6,182,212,.4)}
+
+.card{background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:14px;box-shadow:var(--shadow);border:1px solid var(--glass-border)}
+.card h3{font-size:14px;color:#fff;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--c-line);font-weight:600}
+.card h3::before{content:'';display:inline-block;width:3px;height:14px;background:var(--grad-primary);border-radius:2px;margin-right:8px;box-shadow:var(--c-glow-cyan)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:rgba(15,21,37,.6);padding:10px 14px;text-align:left;color:var(--c-text-dim);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--c-line-strong);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--c-line);color:var(--c-text);white-space:nowrap}
+tr:nth-child(even) td{background:rgba(15,21,37,.3)}
+tr:hover td{background:rgba(6,182,212,.08)!important}
+
+.badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px;line-height:1.6}
+.badge-blue{background:rgba(6,182,212,.15);color:var(--c-primary-light);border:1px solid rgba(6,182,212,.3)}
+.badge-green{background:rgba(16,185,129,.15);color:var(--c-success);border:1px solid rgba(16,185,129,.3)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--c-warning);border:1px solid rgba(245,158,11,.3)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--c-danger);border:1px solid rgba(239,68,68,.3)}
+.badge-gray{background:rgba(148,163,184,.12);color:var(--c-text-dim);border:1px solid var(--c-line)}
+
+.btn{padding:8px 16px;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all var(--transition);display:inline-flex;align-items:center;gap:5px}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--grad-primary);color:#fff;box-shadow:0 2px 12px rgba(6,182,212,.3)}
+.btn-primary:hover{box-shadow:0 4px 24px rgba(6,182,212,.5)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--c-text-dim);border:1px solid var(--c-line)}
+.btn-ghost:hover{background:rgba(255,255,255,.1);border-color:var(--c-line-strong)}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px}
+.color-success{color:var(--c-success)}
+
+.map-page{display:flex;flex-direction:column;gap:14px}
+.map-container{width:100%;height:420px;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--glass-border)}
+.timeline-item{display:flex;gap:12px;padding:10px 0;position:relative}
+.timeline-item::before{content:'';position:absolute;left:11px;top:24px;bottom:-10px;width:2px;background:var(--c-line-strong)}
+.timeline-item:last-child::before{display:none}
+.timeline-dot{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--c-text-dimmer);font-weight:700;z-index:1;border:1px solid var(--c-line)}
+.timeline-item.past .timeline-dot{background:rgba(6,182,212,.25);border-color:var(--c-primary);color:var(--c-primary-light);box-shadow:var(--c-glow-cyan)}
+.timeline-item.active .timeline-dot{background:var(--grad-primary);color:#fff;border-color:transparent;box-shadow:0 0 0 4px rgba(6,182,212,.2),var(--c-glow-cyan)}
+.timeline-body{flex:1;min-width:0}
+.timeline-body .tl-title{font-size:13px;font-weight:600;color:var(--c-text)}
+.timeline-body .tl-time{font-size:11px;color:var(--c-text-dimmer);margin-top:1px}
+.timeline-body .tl-desc{font-size:12px;color:var(--c-text-dim);margin-top:2px}
+
+.empty{text-align:center;color:var(--c-text-dimmer);padding:52px 20px;font-size:13px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin-bottom:12px}
+.detail-item label{display:block;font-size:11px;color:var(--c-text-dimmer);margin-bottom:2px;font-weight:500}
+.detail-item span{font-size:13px;color:var(--c-text)}
+
+@media(max-width:640px){.tabs{overflow-x:auto}.detail-grid{grid-template-columns:1fr}.map-container{height:300px}}
+</style>
+</head>
+<body>
+<div id="toastContainer"></div>
+
+<div id="appPage">
+  <div class="app-header">
+    <div class="brand"><span>Jiarui</span> &middot; 客户门户</div>
+    <div class="user"><span id="displayUser"></span><button onclick="doLogout()">退出</button></div>
+  </div>
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" onclick="navTo('waybills',this)">我的运单</button>
+      <button class="tab" onclick="navTo('billing',this)">我的对账单</button>
+      <button class="tab" onclick="navTo('account',this)">账户信息</button>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="../js/api-service.js"></script>
+<script>
+function toast(msg, type='info') {
+  const c=document.getElementById('toastContainer');
+  const e=document.createElement('div');e.className='toast '+type;e.textContent=msg;e.onclick=()=>e.remove();
+  c.appendChild(e);setTimeout(()=>{if(e.parentNode)e.remove()},3500);
+}
+function getStatusBadge(s){const m={draft:'badge-gray',confirmed:'badge-blue',scheduled:'badge-blue',loaded:'badge-yellow',in_transit:'badge-yellow',arrived:'badge-green',signed:'badge-green',completed:'badge-green',cancelled:'badge-red',exception:'badge-red',sent:'badge-blue'};return m[s]||'badge-gray';}
+
+let currentUser=null,currentMap=null;
+const API='/api';
+const SW={draft:'草稿',confirmed:'已确认',scheduled:'已调度',loaded:'已装车',in_transit:'运输中',arrived:'已到达',signed:'已签收',completed:'已完成',cancelled:'已取消',exception:'异常'};
+const COST_TYPES={fuel:'油费',toll:'过路费',driver_pay:'司机提成',loading:'装卸费',penalty:'罚款',other:'其他'};
+
+async function fetchAPI(url,opts={}){
+  const headers={'Content-Type':'application/json'};
+  if(currentUser?.accessToken)headers['Authorization']='Bearer '+currentUser.accessToken;
+  const r=await fetch(API+url,{...opts,headers});return r.json();
+}
+
+function doLogout(){localStorage.removeItem('client_token');localStorage.removeItem('token');toast('已退出');setTimeout(()=>location.href='/',400)}
+function showApp(){document.getElementById('displayUser').textContent=currentUser.displayName;navTo('waybills')}
+
+// 自动验证
+(function(){
+  var td=localStorage.getItem('token');
+  if(!td){try{var cd=JSON.parse(localStorage.getItem('client_token'));td=cd?.accessToken}catch(e){}}
+  if(!td){location.href='/';return}
+  fetch('/api/auth/me',{headers:{'Authorization':'Bearer '+td}}).then(r=>r.json()).then(function(r){
+    if(r.code===200&&r.data.role==='customer'){currentUser=r.data;localStorage.setItem('client_token',JSON.stringify(r.data));localStorage.setItem('token',td);showApp()}
+    else{localStorage.clear();location.href='/'}
+  }).catch(function(){location.href='/'});
+})();
+
+function navTo(page,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('content').innerHTML='<div class="empty">加载中...</div>';
+  const rs={waybills:renderWaybills,billing:renderBilling,account:renderAccount};
+  rs[page]();
+}
+
+// ===== Waybill list with map tracking =====
+async function renderWaybills(){
+  const r=await JiaruiAPI.waybill.list();const list=r.data||[];
+  document.getElementById('content').innerHTML=`
+  <div class="card"><h3>我的运单</h3>
+  ${list.length===0?'<div class="empty">暂无运单</div>':`
+  <div class="table-wrap"><table><tr><th>运单号</th><th>货物</th><th>报价</th><th>状态</th><th>时间</th><th>操作</th></tr>
+  ${list.map(w=>`<tr>
+    <td style="font-weight:600;color:var(--c-primary)">${w.waybill_no}</td>
+    <td>${w.cargo_name}</td><td class="color-success"><b>&yen;${(w.quoted_fee||0).toFixed(0)}</b></td>
+    <td><span class="badge ${getStatusBadge(w.status)}">${SW[w.status]||w.status}</span></td>
+    <td>${(w.created_at||'').slice(0,16)}</td>
+    <td><button class="btn btn-primary btn-sm" onclick="showWaybillDetail(${w.id})">详情</button>
+    <button class="btn btn-primary btn-sm" onclick="showMapTrack('${w.waybill_no}')"><svg style="width:13px;height:13px;vertical-align:-2px"><use href="#ic-pin"/></svg> 物流地图</button></td>
+  </tr>`).join('')}</table></div>`}
+  </div>`;
+}
+
+async function showWaybillDetail(id){
+  const r=await JiaruiAPI.waybill.get(id);
+  if(r.code!==200){toast('加载失败','error');return}
+  const w=r.data,stops=w.stops||[],costs=w.costs||[];
+  const tracks=['draft','confirmed','scheduled','loaded','in_transit','arrived','signed','completed'],cur=tracks.indexOf(w.status);
+  const modalBg=document.createElement('div');modalBg.className='modal-bg show';
+  modalBg.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,20,40,.5);z-index:1000;display:flex;justify-content:center;align-items:center';
+  modalBg.innerHTML=`<div style="background:var(--glass-bg);backdrop-filter:blur(20px);border-radius:var(--radius-xl);padding:24px;max-width:700px;width:95%;max-height:85vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,.35);border:1px solid var(--glass-border)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h3 style="font-size:17px;font-weight:700;color:#fff">运单详情 &mdash; ${w.waybill_no}</h3><button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.08);cursor:pointer;font-size:16px;color:var(--c-text-dim)" onclick="this.closest('.modal-bg').remove()">&times;</button></div>
+    <div class="detail-grid"><div class="detail-item"><label>客户</label><span>${w.customer_name||'-'}</span></div><div class="detail-item"><label>状态</label><span class="badge ${getStatusBadge(w.status)}">${SW[w.status]}</span></div><div class="detail-item"><label>货物</label><span>${w.cargo_name}</span></div><div class="detail-item"><label>报价</label><span class="color-success" style="font-weight:700;font-size:16px">&yen;${(w.quoted_fee||0).toFixed(0)}</span></div><div class="detail-item"><label>创建时间</label><span>${w.created_at||'-'}</span></div><div class="detail-item"><label>完成时间</label><span>${w.actual_arrive_time||'-'}</span></div></div>
+    <h4 style="font-size:13px;color:var(--c-text-dim);margin:14px 0 8px">运输轨迹</h4>
+    <div style="display:flex;flex-wrap:wrap;gap:0;margin-bottom:12px">${tracks.map((t,i)=>`<div style="flex:1;min-width:75px;text-align:center;position:relative;padding:0 4px"><div style="width:30px;height:30px;border-radius:50%;background:${i<cur?'var(--grad-primary)':i===cur?`rgba(6,182,212,.25)`:'rgba(255,255,255,.06)'};margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:${i<cur?'#fff':'var(--c-text-dim)'};font-weight:700${i===cur?';box-shadow:0 0 0 4px rgba(6,182,212,.2),var(--c-glow-cyan)':''}${i<cur?';border:1px solid rgba(6,182,212,.3)':''}">${i<cur?'&#10003;':i+1}</div><div style="font-size:10px;color:${i<=cur?'var(--c-text)':'var(--c-text-dimmer)'};font-weight:${i<=cur?'600':'400'}">${SW[t]}</div></div>`).join('')}</div>
+    ${stops.length?`<h4 style="font-size:13px;color:var(--c-text-dim);margin:14px 0 8px">站点信息</h4><div class="table-wrap"><table><tr><th>序号</th><th>类型</th><th>联系人</th><th>电话</th><th>地址</th></tr>${stops.map(s=>`<tr><td>${s.stop_seq}</td><td>${s.stop_type==='pickup'?'提货':'卸货'}</td><td>${s.contact_name||''}</td><td>${s.contact_phone||''}</td><td>${s.province||''}${s.city||''}${s.district||''} ${s.address_detail||''}</td></tr>`).join('')}</table></div>`:''}
+    ${costs.length?`<h4 style="font-size:13px;color:var(--c-text-dim);margin:14px 0 8px">费用明细</h4><div class="table-wrap"><table><tr><th>类型</th><th>金额</th><th>备注</th></tr>${costs.map(c=>`<tr><td>${COST_TYPES[c.cost_type]||c.cost_type}</td><td class="color-success"><b>&yen;${c.cost_amount||c.amount||0}</b></td><td>${c.cost_desc||c.remark||''}</td></tr>`).join('')}</table></div>`:''}
+    <div style="text-align:right;margin-top:16px"><button class="btn btn-ghost" onclick="this.closest('.modal-bg').remove()">关闭</button></div></div>`;
+  document.body.appendChild(modalBg);
+  let _dt=null;
+  modalBg.addEventListener('mousedown',function(e){_dt=e.target});
+  modalBg.addEventListener('mouseup',function(e){if(_dt===this&&e.target===this)modalBg.remove();_dt=null});
+}
+
+// ===== MAP-BASED TRACKING (core feature) =====
+async function showMapTrack(no){
+  const r=await JiaruiAPI.waybill.track(no);
+  if(r.code!==200){toast(r.message,'error');return}
+  const t=r.data,w=t.waybill,gps=t.gpsRecords||[],stops=t.stops||[];
+  if(currentMap){currentMap.remove();currentMap=null}
+
+  const tracks=['draft','confirmed','scheduled','loaded','in_transit','arrived','signed','completed'];
+  const cur=tracks.indexOf(w.status);
+  const statusTimes=[w.created_at,w.actual_depart_time||'','',w.actual_depart_time||'','',w.actual_arrive_time||'','',w.actual_arrive_time||''];
+
+  let tlHtml='<div class="timeline">';
+  tracks.forEach((s,i)=>{
+    const past=i<cur,active=i===cur;
+    const labels={confirmed:'已确认',scheduled:'已派车',loaded:'已装车',in_transit:'运输中',arrived:'已到达',signed:'已签收',completed:'已完成',draft:'已创建'};
+    const descs={draft:'运单已创建',confirmed:'等待调度派车',scheduled:'已分配车辆司机',loaded:'货物已装车',in_transit:'正在运输途中',arrived:'已到达目的地',signed:'收货人已签收',completed:'运单已完成归档'};
+    if(i<=cur||i===cur+1) tlHtml+=`<div class="timeline-item ${past?'past':''}${active?' active':''}"><div class="timeline-dot">${past?'&#10003;':i+1}</div><div class="timeline-body"><div class="tl-title">${labels[s]||s}</div><div class="tl-time">${statusTimes[i]||''}</div><div class="tl-desc">${descs[s]||''}</div></div></div>`;
+  });
+  tlHtml+='</div>';
+
+  const content=document.getElementById('content');
+  content.innerHTML=`
+  <div class="map-page">
+    <div class="card" style="padding:14px 18px;margin-bottom:0"><div style="display:flex;justify-content:space-between;align-items:center"><div><b style="font-size:16px">${w.waybill_no}</b> <span class="badge ${getStatusBadge(w.status)}">${SW[w.status]}</span> <span style="color:var(--c-text-dim);font-size:13px;margin-left:8px">${w.cargo_name} &middot; &yen;${(w.quoted_fee||0).toFixed(0)}</span></div><button class="btn btn-ghost btn-sm" onclick="navTo('waybills')">&larr; 返回列表</button></div></div>
+    <div class="card" style="padding:0;overflow:hidden"><div id="trackingMap" class="map-container"></div>
+      <div style="padding:16px 20px"><h3 style="margin-bottom:10px">物流进度</h3>${tlHtml}</div>
+    </div>
+    <div class="card" style="margin-top:0"><h3>GPS 轨迹记录</h3>
+    ${gps.length?`<div class="table-wrap"><table><tr><th>时间</th><th>经度</th><th>纬度</th><th>速度</th></tr>${gps.map(g=>`<tr><td>${(g.device_time||'').slice(0,19)}</td><td>${g.longitude?.toFixed(4)}</td><td>${g.latitude?.toFixed(4)}</td><td>${g.speed_kmh?.toFixed(0)||'-'} km/h</td></tr>`).join('')}</table></div>`:'<div class="empty">暂无GPS数据</div>'}
+    </div>
+  </div>`;
+
+  setTimeout(()=>{
+    const mapEl=document.getElementById('trackingMap');
+    if(!mapEl)return;
+    currentMap=L.map(mapEl,{attributionControl:false}).setView([23.1,113.3],8);
+    L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{subdomains:'1234',maxZoom:18,attribution:'高德地图'}).addTo(currentMap);
+
+    const stopIcons={pickup:{color:'#1a56db',label:'取'},delivery:{color:'#dc2626',label:'达'}};
+    const stopMarkers=[];
+    const cityCoords={深圳:[22.5431,114.0579],广州:[23.1291,113.2644],东莞:[23.0208,113.7518],惠州:[23.1118,114.4158],长沙:[28.2282,112.9388]};
+
+    stops.forEach((s,i)=>{
+      const city=s.city||s.province||'';
+      let lat=s.latitude||null,lng=s.longitude||null;
+      if(!lat&&!lng){
+        for(const [cn,co] of Object.entries(cityCoords)){if(city.includes(cn)){lat=co[0];lng=co[1];break}}
+      }
+      if((!lat||!lng)&&gps.length){
+        if(i===0){lat=gps[0].latitude;lng=gps[0].longitude}
+        else{lat=gps[gps.length-1].latitude;lng=gps[gps.length-1].longitude}
+      }
+      if(lat&&lng){
+        const si=stopIcons[s.stop_type]||stopIcons.pickup;
+        const icon=L.divIcon({html:`<div style="background:${si.color};color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2)">${si.label}</div>`,className:'',iconSize:[24,24],iconAnchor:[12,12]});
+        const marker=L.marker([lat,lng],{icon}).addTo(currentMap).bindPopup(`<b>第${s.stop_seq}站: ${s.stop_type==='pickup'?'提货':'卸货'}</b><br>${s.address_detail||''}`);
+        stopMarkers.push({lat,lng,marker});
+      }
+    });
+
+    if(gps.length>=2){
+      const pts=gps.map(g=>[g.latitude,g.longitude]);
+      L.polyline(pts,{color:'#1a56db',weight:3,opacity:.7,dashArray:'8 4'}).addTo(currentMap);
+    }
+
+    if(gps.length){
+      const last=gps[gps.length-1];
+      const pulseIcon=L.divIcon({html:`<div style="width:16px;height:16px;background:var(--c-success);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(4,120,87,.4);animation:pulse 1.8s ease infinite"></div><style>@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(4,120,87,.5)}50%{box-shadow:0 0 0 12px rgba(4,120,87,0)}}</style>`,className:'',iconSize:[16,16],iconAnchor:[8,8]});
+      L.marker([last.latitude,last.longitude],{icon:pulseIcon}).addTo(currentMap).bindPopup(`<b>当前位置</b><br>${last.device_time||''}<br>速度: ${last.speed_kmh?.toFixed(0)||'-'} km/h`);
+    }
+
+    if(stopMarkers.length>=2){
+      const group=L.featureGroup(stopMarkers.map(m=>m.marker));
+      currentMap.fitBounds(group.getBounds().pad(0.2));
+    }
+  },100);
+}
+
+// ===== Billing =====
+async function renderBilling(){
+  const r=await JiaruiAPI.billing.list();const list=r.data||[];
+  document.getElementById('content').innerHTML=`
+  <div class="card"><h3>我的对账单</h3>
+  ${list.length===0?'<div class="empty">暂无对账单</div>':`
+  <div class="table-wrap"><table><tr><th>账单号</th><th>账期</th><th>金额</th><th>运单数</th><th>状态</th><th>操作</th></tr>
+  ${list.map(b=>`<tr><td style="font-weight:600">${b.statement_no}</td><td>${(b.period_start||'').slice(0,10)} ~ ${(b.period_end||'').slice(0,10)}</td><td class="color-success"><b>&yen;${(b.total_amount||0).toFixed(0)}</b></td><td>${b.waybill_count} 笔</td><td><span class="badge ${getStatusBadge(b.status)}">${b.status==='draft'?'草稿':b.status==='sent'?'已发送':b.status==='confirmed'?'已确认':b.status}</span></td><td><button class="btn btn-primary btn-sm" onclick="showBillingDetail(${b.id})">详情</button></td></tr>`).join('')}</table></div>`}
+  </div>`;
+}
+async function showBillingDetail(id){
+  const r=await JiaruiAPI.billing.get(id);if(r.code!==200){toast('加载失败','error');return}
+  const b=r.data,items=b.items||[];
+  const modalBg=document.createElement('div');modalBg.className='modal-bg show';
+  modalBg.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,20,40,.5);z-index:1000;display:flex;justify-content:center;align-items:center';
+  modalBg.innerHTML=`<div style="background:var(--glass-bg);backdrop-filter:blur(20px);border-radius:var(--radius-xl);padding:24px;max-width:700px;width:95%;max-height:85vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,.35);border:1px solid var(--glass-border)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h3 style="font-size:17px;font-weight:700;color:#fff">对账单详情 &mdash; ${b.statement_no}</h3><button style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.08);cursor:pointer;font-size:16px;color:var(--c-text-dim)" onclick="this.closest('.modal-bg').remove()">&times;</button></div><div class="detail-grid"><div class="detail-item"><label>客户</label><span>${b.customer_name||'-'}</span></div><div class="detail-item"><label>状态</label><span class="badge ${getStatusBadge(b.status)}">${b.status==='draft'?'草稿':b.status==='sent'?'已发送':b.status==='confirmed'?'已确认':b.status}</span></div><div class="detail-item"><label>账期</label><span>${(b.period_start||'').slice(0,10)} ~ ${(b.period_end||'').slice(0,10)}</span></div><div class="detail-item"><label>总金额</label><span style="font-size:18px;font-weight:700;color:var(--c-primary-light)">&yen;${(b.total_amount||0).toFixed(0)}</span></div></div>${items.length?`<div class="table-wrap"><table><tr><th>运单号</th><th>货物</th><th>金额</th></tr>${items.map(bi=>`<tr><td><b>${bi.waybill_no}</b></td><td>${bi.cargo_name||''}</td><td class="color-success"><b>&yen;${(bi.amount||0).toFixed(0)}</b></td></tr>`).join('')}</table></div>`:''}<div style="text-align:right;margin-top:16px"><button class="btn btn-ghost" onclick="this.closest('.modal-bg').remove()">关闭</button></div></div>`;
+  document.body.appendChild(modalBg);
+  let _dt=null;modalBg.addEventListener('mousedown',function(e){_dt=e.target});
+  modalBg.addEventListener('mouseup',function(e){if(_dt===this&&e.target===this)modalBg.remove();_dt=null});
+}
+
+// ===== Account =====
+async function renderAccount(){
+  const r=await JiaruiAPI.customer.get(currentUser.customerId);
+  if(r.code!==200){document.getElementById('content').innerHTML='<div class="card"><div class="empty">加载失败</div></div>';return}
+  const c=r.data,addrs=c.addresses||[];
+  document.getElementById('content').innerHTML=`<div class="card"><h3>公司信息</h3><div class="detail-grid"><div class="detail-item"><label>公司全称</label><span>${c.company_name}</span></div><div class="detail-item"><label>简称</label><span>${c.short_name||'-'}</span></div><div class="detail-item"><label>客户编号</label><span style="font-weight:600;color:var(--c-primary)">${c.customer_code}</span></div><div class="detail-item"><label>结算方式</label><span class="badge badge-blue">${c.settlement_type==='monthly'?'月结':c.settlement_type==='per_trip'?'趟结':'预付'}</span></div><div class="detail-item"><label>信用额度</label><span class="color-success"><b>&yen;${(c.credit_limit||0).toFixed(0)}</b></span></div><div class="detail-item"><label>折扣率</label><span>${((c.discount_rate||1)*100).toFixed(0)}%</span></div><div class="detail-item"><label>联系人</label><span>${c.contact_name||'-'}</span></div><div class="detail-item"><label>联系电话</label><span>${c.contact_phone||'-'}</span></div><div class="detail-item"><label>地址</label><span>${[c.province,c.city,c.district,c.address_detail].filter(Boolean).join('')||'-'}</span></div></div></div>${addrs.length?`<div class="card"><h3>地址簿</h3><div class="table-wrap"><table><tr><th>名称</th><th>联系人</th><th>电话</th><th>地址</th><th>默认</th></tr>${addrs.map(a=>`<tr><td><b>${a.address_name}</b></td><td>${a.contact_name||''}</td><td>${a.contact_phone||''}</td><td>${[a.province,a.city,a.district,a.address_detail].filter(Boolean).join('')}</td><td>${a.is_default?'是':''}</td></tr>`).join('')}</table></div></div>`:''}`;
+}
+
+// SVG fix
+(function(){function f(s){if(!s.hasAttribute('viewBox')&&!s.closest('defs')&&s.style.display!=='none')s.setAttribute('viewBox','0 0 20 20')}document.querySelectorAll('svg').forEach(f);new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){if(n.tagName==='svg')f(n);(n.querySelectorAll?n.querySelectorAll('svg'):[]).forEach(f)}}))}).observe(document.body,{childList:true,subtree:true})})();
+</script>
+</body>
+</html>

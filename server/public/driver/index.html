@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>佳瑞物流 — 司机端</title>
+<svg style="display:none"><defs>
+  <g id="ic-truck"><rect x="1" y="8" width="14" height="8" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="16" y="5" width="3.5" height="11" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="5" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/></g>
+  <g id="ic-pin"><circle cx="10" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 10c-3.5 4-5 7-5 8.5a5 5 0 0 0 10 0c0-1.5-1.5-4.5-5-8.5Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="7" r="1.2" fill="currentColor"/></g>
+  <g id="ic-user"><circle cx="10" cy="6.5" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 19a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></g>
+  <g id="ic-lock"><rect x="3.5" y="9" width="13" height="9.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 9V6a3.5 3.5 0 0 1 7 0v3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13.5" r="1.2" fill="currentColor"/></g>
+  <g id="ic-arrow-left"><line x1="18" y1="10" x2="2" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><polyline points="7,5 2,10 7,15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+</defs></svg>
+<style>
+:root {
+  --c-primary:#06b6d4; --c-primary-light:#22d3ee; --c-success:#10b981;
+  --c-warning:#f59e0b; --c-danger:#ef4444;
+  --c-bg:#0a0e1a; --c-card:rgba(21,28,48,.85);
+  --c-line:rgba(255,255,255,.07); --c-text:#e2e8f0; --c-dim:#94a3b8; --c-dimmer:#64748b;
+  --radius:10px; --radius-lg:14px;
+  --shadow:0 4px 16px rgba(0,0,0,.35);
+  --grad:linear-gradient(135deg,#06b6d4,#3b82f6);
+  --transition:0.2s;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;background:var(--c-bg);color:var(--c-text);min-height:100vh;font-size:15px;-webkit-font-smoothing:antialiased}
+
+/* Login */
+.login-page{display:flex;justify-content:center;align-items:center;min-height:100vh;background:var(--c-bg);position:relative;overflow:hidden}
+.login-page::before{content:'';position:absolute;top:-30%;right:-20%;width:300px;height:300px;background:radial-gradient(circle,rgba(6,182,212,.15),transparent 60%);border-radius:50%}
+.login-card{background:var(--c-card);backdrop-filter:blur(20px);border-radius:var(--radius-lg);padding:36px 28px;width:92%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(6,182,212,.1);border:1px solid var(--c-line)}
+.login-card h2{text-align:center;font-size:24px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
+.login-card .sub{text-align:center;font-size:12px;color:var(--c-dimmer);margin-bottom:22px;letter-spacing:2px}
+.login-card input{width:100%;padding:13px 14px;background:rgba(10,16,28,.6);border:1.5px solid var(--c-line);border-radius:var(--radius);font-size:15px;color:var(--c-text);outline:none;margin-bottom:12px;transition:all var(--transition)}
+.login-card input:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(6,182,212,.15)}
+.login-card button{width:100%;padding:14px;background:var(--grad);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(6,182,212,.3);transition:all var(--transition)}
+.login-card button:active{transform:scale(.97)}
+.login-card .err{text-align:center;color:var(--c-danger);font-size:13px;margin-top:8px;min-height:18px}
+.login-card .demo{text-align:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--c-line);font-size:12px;color:var(--c-dimmer)}
+.login-card .demo b{color:var(--c-primary-light)}
+
+/* App */
+.app-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--c-card);backdrop-filter:blur(16px);border-bottom:1px solid var(--c-line);position:sticky;top:0;z-index:10}
+.app-header h3{font-size:16px;font-weight:700}
+.app-header .logout{background:none;border:1px solid var(--c-line);color:var(--c-dim);padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer}
+.container{padding:12px 16px;max-width:600px;margin:0 auto}
+
+.trip-card{background:var(--c-card);backdrop-filter:blur(12px);border-radius:var(--radius-lg);padding:18px;margin-bottom:12px;border:1px solid var(--c-line);cursor:pointer;transition:all var(--transition)}
+.trip-card:active{transform:scale(.98)}
+.trip-card .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.trip-card .no{font-weight:700;color:var(--c-primary-light);font-size:15px}
+.trip-card .badge{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.trip-card .badge.transit{background:rgba(245,158,11,.15);color:var(--c-warning);border:1px solid rgba(245,158,11,.3)}
+.trip-card .badge.loaded{background:rgba(6,182,212,.15);color:var(--c-primary-light);border:1px solid rgba(6,182,212,.3)}
+.trip-card .mid{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--c-dim)}
+.trip-card .mid span{color:var(--c-text);font-weight:500}
+
+/* Detail */
+.detail-header{display:flex;justify-content:space-between;align-items:center;padding:16px 0 10px}
+.detail-header button{background:none;border:1px solid var(--c-line);color:var(--c-dim);padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--c-line);font-size:13px}
+.info-row .lbl{color:var(--c-dimmer)}
+.info-row .val{color:var(--c-text);font-weight:500}
+.stop-box{background:rgba(10,16,28,.5);border-radius:var(--radius);padding:14px;margin:10px 0}
+.stop-box .st{font-size:11px;color:var(--c-primary-light);font-weight:600;margin-bottom:4px}
+.stop-box .addr{font-size:14px;color:var(--c-text)}
+
+.gps-bar{background:var(--c-card);border-radius:var(--radius-lg);padding:16px;margin:12px 0;text-align:center;border:1px solid var(--c-line)}
+.gps-bar .coords{font-size:13px;color:var(--c-dim);margin:8px 0}
+.gps-bar .coords b{color:var(--c-primary-light);font-family:monospace;font-size:14px}
+.gps-bar .status{font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px}
+.gps-bar .dot{width:8px;height:8px;border-radius:50%;background:var(--c-success);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}50%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}
+.btn-track{width:100%;padding:15px;border:none;border-radius:var(--radius);font-size:16px;font-weight:700;cursor:pointer;transition:all var(--transition);margin:8px 0}
+.btn-track.start{background:var(--grad);color:#fff;box-shadow:0 4px 20px rgba(6,182,212,.3)}
+.btn-track.stop{background:rgba(239,68,68,.2);color:var(--c-danger);border:1px solid rgba(239,68,68,.4)}
+.btn-track:active{transform:scale(.97)}
+
+.empty{text-align:center;color:var(--c-dimmer);padding:60px 20px;font-size:14px}
+.toast-stack{position:fixed;top:max(16px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:9999;width:min(92vw,420px);display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{position:relative;padding:11px 16px;border-radius:12px;color:#fff;font-size:13px;font-weight:600;line-height:1.45;animation:slideDown .25s;backdrop-filter:blur(10px);box-shadow:0 8px 28px rgba(0,0,0,.3);text-align:center;overflow-wrap:anywhere}
+.toast.ok{background:rgba(16,185,129,.94)}.toast.err{background:rgba(239,68,68,.94)}.toast.info{background:rgba(14,165,233,.94)}
+@keyframes slideDown{from{transform:translate(-50%,-60px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+</style>
+</head>
+<body>
+
+<div id="appPage">
+  <div class="app-header">
+    <h3 id="headerTitle">我的运单</h3>
+    <button class="logout" onclick="doLogout()">退出</button>
+  </div>
+  <div class="container" id="content"></div>
+</div>
+
+<script src="../js/api-service.js"></script>
+<script>
+function toast(message,type){
+  var stack=document.getElementById('toastStack');
+  if(!stack){stack=document.createElement('div');stack.id='toastStack';stack.className='toast-stack';document.body.appendChild(stack)}
+  var duplicate=Array.from(stack.children).find(function(item){return item.textContent===message});
+  if(duplicate)return;
+  var element=document.createElement('div');element.className='toast '+(type||'ok');element.textContent=message;stack.appendChild(element);
+  setTimeout(function(){element.remove()},2800);
+}
+
+var currentUser=null,gpsWatchId=null,activeWaybillId=null,gpsReportCount=0;
+var SW={loaded:'已装车',in_transit:'运输中',arrived:'已到达',signed:'已签收',completed:'已完成'};
+
+function doLogout(){stopTracking({silent:true,refresh:false});localStorage.removeItem('token');localStorage.removeItem('client_token');location.href='/'}
+
+(function(){
+  var token=localStorage.getItem('token');
+  if(!token){location.href='/';return}
+  JiaruiAPI.auth.me().then(function(result){
+    if(result.code===200&&result.data.role==='driver'){currentUser=result.data;showTripList()}
+    else{localStorage.removeItem('token');location.href='/'}
+  }).catch(function(){location.href='/'});
+})();
+
+function showTripList(){
+  document.getElementById('headerTitle').textContent='我的运单';
+  document.getElementById('content').innerHTML='<div class="empty">加载中...</div>';
+  JiaruiAPI.driver.trips().then(function(result){
+    var trips=result.data||[];
+    if(!trips.length){document.getElementById('content').innerHTML='<div class="empty">暂无在途运单<br><small style="color:var(--c-dimmer)">等待调度员分配运输任务</small></div>';return}
+    document.getElementById('content').innerHTML=trips.map(function(waybill){
+      return '<div class="trip-card" onclick="showTripDetail('+waybill.id+')">'+
+        '<div class="top"><span class="no">'+waybill.waybill_no+'</span><span class="badge '+(waybill.status==='in_transit'?'transit':'loaded')+'">'+SW[waybill.status]+'</span></div>'+
+        '<div class="mid"><span>'+waybill.cargo_name+'</span>客户 '+waybill.customer_name+' · ¥'+(waybill.quoted_fee||0).toFixed(0)+'</div></div>';
+    }).join('');
+  });
+}
+
+function showTripDetail(id){
+  document.getElementById('headerTitle').textContent='运单详情';
+  JiaruiAPI.driver.trips().then(function(result){
+    var waybill=(result.data||[]).find(function(item){return item.id===id});
+    if(!waybill){toast('运单不存在','err');return}
+    var stops=waybill.stops||[],gps=waybill.recentGps||[];
+    var pickup=stops.find(function(stop){return stop.stop_type==='pickup'});
+    var delivery=stops.find(function(stop){return stop.stop_type==='delivery'});
+    var lastGps=gps.length?gps[gps.length-1]:null;
+    var tracking=gpsWatchId!==null&&activeWaybillId===waybill.id;
+    var html='<div style="display:flex;align-items:center;gap:8px;padding:10px 0">'+
+      '<button onclick="returnToTrips()" aria-label="返回运单列表" style="background:none;border:none;color:var(--c-dim);font-size:20px;cursor:pointer;padding:10px;min-width:44px;min-height:44px">&larr;</button>'+
+      '<b style="font-size:16px">'+waybill.waybill_no+'</b><span style="font-size:12px;color:var(--c-dim);margin-left:auto">'+SW[waybill.status]+'</span></div>';
+    html+='<div class="info-row"><span class="lbl">货物</span><span class="val">'+waybill.cargo_name+'</span></div>';
+    html+='<div class="info-row"><span class="lbl">客户</span><span class="val">'+waybill.customer_name+'</span></div>';
+    html+='<div class="info-row"><span class="lbl">报价</span><span class="val" style="color:var(--c-success)">¥'+(waybill.quoted_fee||0).toFixed(0)+'</span></div>';
+    if(pickup)html+='<div class="stop-box"><div class="st">提货地址</div><div class="addr">'+(pickup.province||'')+(pickup.city||'')+(pickup.district||'')+' '+pickup.address_detail+'</div></div>';
+    if(delivery)html+='<div class="stop-box"><div class="st" style="color:var(--c-danger)">送货地址</div><div class="addr">'+(delivery.province||'')+(delivery.city||'')+(delivery.district||'')+' '+delivery.address_detail+'</div></div>';
+    html+='<div class="gps-bar">';
+    if(tracking){
+      html+='<div class="status"><div class="dot"></div> GPS 定位中 · 已上报 <b id="gpsCount">'+gpsReportCount+'</b> 次</div>';
+      html+='<div style="font-size:11px;color:var(--c-dimmer);margin-top:6px">保持页面打开，并允许浏览器持续使用位置权限</div>';
+      if(lastGps)html+='<div class="coords" id="gpsLiveCoords">当前 <b>'+lastGps.longitude.toFixed(6)+'</b>, <b>'+lastGps.latitude.toFixed(6)+'</b></div>';
+    }else{
+      html+='<div class="status" style="color:var(--c-dimmer)">GPS 未开启</div>';
+      if(lastGps)html+='<div class="coords">最后位置 <b>'+lastGps.longitude.toFixed(6)+'</b>, <b>'+lastGps.latitude.toFixed(6)+'</b></div>';
+    }
+    if(gps.length)html+='<div style="font-size:11px;color:var(--c-dimmer);margin-top:6px">司机实报 '+gps.length+' 个位置点</div>';
+    html+='</div>';
+    if(waybill.status==='loaded'||waybill.status==='in_transit'){
+      html+=tracking?'<button class="btn-track stop" onclick="stopTracking()">停止定位</button>':'<button class="btn-track start" onclick="startTracking('+waybill.id+')">开始 GPS 定位</button>';
+    }
+    html+='<div style="background:rgba(6,182,212,.08);border-radius:var(--radius);padding:12px;margin:8px 0;font-size:12px;color:var(--c-dim);text-align:center">轨迹页面将分别显示计划路线和司机实际定位</div>';
+    document.getElementById('content').innerHTML=html;
+  });
+}
+
+function startTracking(waybillId){
+  if(!navigator.geolocation){toast('当前浏览器不支持定位','err');return}
+  if(gpsWatchId!==null){
+    if(activeWaybillId===waybillId){toast('GPS 定位已经在运行','info');return}
+    stopTracking({silent:true,refresh:false});
+  }
+  activeWaybillId=waybillId;gpsReportCount=0;showTripDetail(waybillId);toast('正在请求定位权限…','info');
+  gpsWatchId=navigator.geolocation.watchPosition(function(position){
+    var speed=position.coords.speed||0;
+    JiaruiAPI.driver.reportGps({waybillId:activeWaybillId,longitude:position.coords.longitude,latitude:position.coords.latitude,speedKmh:speed*3.6,accuracyM:position.coords.accuracy}).then(function(result){
+      if(result.code!==200){toast(result.message||'GPS 上报失败','err');return}
+      gpsReportCount++;
+      var count=document.getElementById('gpsCount');if(count)count.textContent=gpsReportCount;
+      var coords=document.getElementById('gpsLiveCoords');if(coords)coords.innerHTML='当前 <b>'+result.data.longitude.toFixed(6)+'</b>, <b>'+result.data.latitude.toFixed(6)+'</b>';
+    }).catch(function(){toast('GPS 上报网络异常','err')});
+  },function(error){
+    if(error.code===1){stopTracking({silent:true,refresh:false});toast('定位权限被拒绝，请在浏览器设置中允许位置权限','err')}
+    else toast('定位暂时失败：'+(error.message||'无法获取位置'),'err');
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:5000});
+}
+
+function stopTracking(options){
+  options=options||{};
+  var wasTracking=gpsWatchId!==null,waybillId=activeWaybillId;
+  if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null}
+  activeWaybillId=null;
+  if(wasTracking&&!options.silent)toast('GPS 定位已停止，本次共上报 '+gpsReportCount+' 次','info');
+  gpsReportCount=0;
+  if(options.refresh!==false&&waybillId)showTripDetail(waybillId);
+}
+
+function returnToTrips(){stopTracking({silent:true,refresh:false});showTripList()}
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: jiarui-logistics-v2
+  profiles:
+    active: dev
+
+  # 数据源
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/jiarui_logistics?currentSchema=public&stringtype=unspecified
+    username: jiarui
+    password: jiarui_dev_2024
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  # Redis
+  redis:
+    host: localhost
+    port: 6379
+    password: jiarui_redis_2024
+    database: 0
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 5
+
+  # RabbitMQ
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: jiarui
+    password: jiarui_mq_2024
+    publisher-confirm-type: correlated
+    publisher-returns: true
+
+  # 文件上传
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+
+  # Jackson
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+
+# MyBatis-Plus
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.jiarui.module.*.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# JWT
+jwt:
+  secret: jiarui_logistics_jwt_secret_key_2024_must_be_long_enough_256bit
+  expiration: 86400000       # 24小时(毫秒)
+  refresh-expiration: 604800000  # 7天
+
+# MinIO 对象存储
+minio:
+  endpoint: http://localhost:9000
+  access-key: jiarui_admin
+  secret-key: jiarui_minio_2024
+  bucket-name: jiarui-logistics
+  region: cn-south-1
+
+# 腾讯地图 API
+tencent-map:
+  key: YOUR_TENCENT_MAP_KEY   # 替换为实际的腾讯地图 Key
+  secret: YOUR_TENCENT_MAP_SECRET
+
+# 管理端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# 日志
+logging:
+  level:
+    com.jiarui: DEBUG
+    org.springframework.security: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,0 +1,98 @@
+# ============================================================
+# 佳瑞物流 V2.0 开发环境 Docker Compose
+# 启动: docker compose up -d
+# 停止: docker compose down
+# ============================================================
+
+version: "3.8"
+
+services:
+  # ===========================================
+  # PostgreSQL 15 + PostGIS
+  # ===========================================
+  postgres:
+    image: postgis/postgis:15-3.4
+    container_name: jiarui-pg
+    environment:
+      POSTGRES_DB: jiarui_logistics
+      POSTGRES_USER: jiarui
+      POSTGRES_PASSWORD: jiarui_dev_2024
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ../sql:/docker-entrypoint-initdb.d   # 首次启动自动执行 SQL
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jiarui -d jiarui_logistics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ===========================================
+  # Redis 7
+  # ===========================================
+  redis:
+    image: redis:7-alpine
+    container_name: jiarui-redis
+    command: redis-server --requirepass jiarui_redis_2024 --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # ===========================================
+  # RabbitMQ 3.12 (含管理界面)
+  # ===========================================
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: jiarui-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: jiarui
+      RABBITMQ_DEFAULT_PASS: jiarui_mq_2024
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # 管理界面 http://localhost:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # ===========================================
+  # MinIO 对象存储 (货物照片 / 签收单)
+  # ===========================================
+  minio:
+    image: minio/minio:latest
+    container_name: jiarui-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: jiarui_admin
+      MINIO_ROOT_PASSWORD: jiarui_minio_2024
+    ports:
+      - "9000:9000"     # S3 API
+      - "9001:9001"     # Web管理界面 http://localhost:9001
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+  redis_data:
+  rabbitmq_data:
+  minio_data:

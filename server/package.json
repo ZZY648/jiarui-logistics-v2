@@ -1,0 +1,20 @@
+{
+    "name":  "jiarui-logistics",
+    "version":  "2.0.0",
+    "description":  "佳瑞物流管理系统 V2.0",
+    "main":  "server.js",
+    "scripts":  {
+                    "start":  "node server.js",
+                    "test":  "node --test"
+                },
+    "dependencies":  {
+                         "bcryptjs":  "^2.4.3",
+                         "echarts":  "^5.6.0",
+                         "express":  "^4.18.2",
+                         "jsonwebtoken":  "^9.0.2",
+                         "leaflet":  "^1.9.4"
+                     },
+    "engines":  {
+                    "node":  "\u003e=20 \u003c25"
+                }
+}
