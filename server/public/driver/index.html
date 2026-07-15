@@ -113,12 +113,13 @@ function doLogout(){stopTracking({silent:true,refresh:false});localStorage.remov
   var token=localStorage.getItem('token');
   if(!token){location.href='/';return}
   JiaruiAPI.auth.me().then(function(result){
-    if(result.code===200&&result.data.role==='driver'){currentUser=result.data;showTripList()}
+    if(result.code===200&&result.data.role==='driver'){currentUser=result.data;var savedWaybillId=parseInt(localStorage.getItem('driver_active_waybill'));if(savedWaybillId)showTripDetail(savedWaybillId);else showTripList()}
     else{localStorage.removeItem('token');location.href='/'}
   }).catch(function(){location.href='/'});
 })();
 
 function showTripList(){
+  localStorage.removeItem('driver_active_waybill');
   document.getElementById('headerTitle').textContent='我的运单';
   document.getElementById('content').innerHTML='<div class="empty">加载中...</div>';
   JiaruiAPI.driver.trips().then(function(result){
@@ -133,6 +134,7 @@ function showTripList(){
 }
 
 function showTripDetail(id){
+  localStorage.setItem('driver_active_waybill',String(id));
   document.getElementById('headerTitle').textContent='运单详情';
   JiaruiAPI.driver.trips().then(function(result){
     var waybill=(result.data||[]).find(function(item){return item.id===id});

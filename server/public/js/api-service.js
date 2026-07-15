@@ -25,6 +25,13 @@ function _getToken() {
   return null;
 }
 
+const API_CACHE_TTL = 10000;
+const _apiCache = new Map();
+
+function _clearApiCache() {
+  _apiCache.clear();
+}
+
 function _apiFetch(url, options = {}) {
   const headers = {
     'Content-Type': 'application/json',
@@ -32,11 +39,27 @@ function _apiFetch(url, options = {}) {
   };
   const token = _getToken();
   if (token) headers['Authorization'] = 'Bearer ' + token;
+  const method = (options.method || 'GET').toUpperCase();
+  const cacheKey = token + ':' + url;
+  if (method === 'GET') {
+    const cached = _apiCache.get(cacheKey);
+    if (cached?.data && cached.expiresAt > Date.now()) return Promise.resolve(cached.data);
+    if (cached?.promise) return cached.promise;
+  }
   const opts = { ...options, headers };
   if (options.body && typeof options.body === 'object') {
     opts.body = JSON.stringify(options.body);
   }
-  return fetch(API_BASE + url, opts).then(r => r.json());
+  const request = fetch(API_BASE + url, opts).then(r => r.json()).then(data => {
+    if (method === 'GET') _apiCache.set(cacheKey, { data, expiresAt: Date.now() + API_CACHE_TTL });
+    else _clearApiCache();
+    return data;
+  }).catch(error => {
+    if (method === 'GET') _apiCache.delete(cacheKey);
+    throw error;
+  });
+  if (method === 'GET') _apiCache.set(cacheKey, { promise: request, expiresAt: 0 });
+  return request;
 }
 
 // ==================== API 分组 ====================

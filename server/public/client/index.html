@@ -124,9 +124,9 @@ tr:hover td{background:rgba(6,182,212,.08)!important}
   </div>
   <div class="container">
     <div class="tabs">
-      <button class="tab active" onclick="navTo('waybills',this)">我的运单</button>
-      <button class="tab" onclick="navTo('billing',this)">我的对账单</button>
-      <button class="tab" onclick="navTo('account',this)">账户信息</button>
+      <button class="tab active" id="tab-waybills" onclick="navTo('waybills',this)">我的运单</button>
+      <button class="tab" id="tab-billing" onclick="navTo('billing',this)">我的对账单</button>
+      <button class="tab" id="tab-account" onclick="navTo('account',this)">账户信息</button>
     </div>
     <div id="content"></div>
   </div>
@@ -154,7 +154,7 @@ async function fetchAPI(url,opts={}){
 }
 
 function doLogout(){localStorage.removeItem('client_token');localStorage.removeItem('token');toast('已退出');setTimeout(()=>location.href='/',400)}
-function showApp(){document.getElementById('displayUser').textContent=currentUser.displayName;navTo('waybills')}
+function showApp(){document.getElementById('displayUser').textContent=currentUser.displayName;navTo(localStorage.getItem('client_last_page')||'waybills')}
 
 // 自动验证
 (function(){
@@ -168,10 +168,12 @@ function showApp(){document.getElementById('displayUser').textContent=currentUse
 })();
 
 function navTo(page,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(el)el.classList.add('active');
-  document.getElementById('content').innerHTML='<div class="empty">加载中...</div>';
   const rs={waybills:renderWaybills,billing:renderBilling,account:renderAccount};
+  if(!rs[page])page='waybills';
+  localStorage.setItem('client_last_page',page);
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  (el||document.getElementById('tab-'+page))?.classList.add('active');
+  document.getElementById('content').innerHTML='<div class="empty">加载中...</div>';
   rs[page]();
 }
 

@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{if(localStorage.getItem('token'))document.documentElement.classList.add('session-restoring')}catch(e){}</script>
 <title>物流管理平台 V2.0</title>
 <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
 <svg style="display:none" aria-hidden="true"><defs>
@@ -266,7 +267,7 @@ td .btn + .btn, td .btn + button {margin-left:6px}
 .coordinate-toolbar{display:flex;gap:8px;flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--c-line)}
 .coordinate-toolbar button{min-height:40px}.coordinate-toolbar .active{background:var(--grad-primary);color:#fff;border-color:transparent}
 #waybillCoordinateMap{height:280px;width:100%;background:#dbeafe}.coordinate-map-shell{position:relative;min-height:280px}.coordinate-map-loading{position:absolute;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;gap:9px;background:rgba(219,234,254,.92);color:#1e3a8a;font-size:13px;font-weight:600;pointer-events:none}.coordinate-map-loading.hidden{display:none}.coordinate-map-loading.error{pointer-events:auto;background:rgba(254,242,242,.94);color:#991b1b}.coordinate-map-loading button{pointer-events:auto}.coordinate-help{padding:9px 12px;color:var(--c-text-dim);font-size:12px;line-height:1.55}.coordinate-status{padding:8px 12px;background:rgba(6,182,212,.08);font-size:12px;color:var(--c-primary-light)}.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,14,26,.85);z-index:9998;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:13px;color:var(--c-text-dim);gap:14px;backdrop-filter:blur(6px)}
-.loading-overlay.hidden{display:none}
+.loading-overlay.hidden{display:none}html.session-restoring #loginPage{display:none}html.session-restoring .loading-overlay.hidden{display:flex}#pageContent{position:relative;min-height:180px}#pageContent.page-loading{pointer-events:none}#pageContent.page-loading::before{content:"";position:absolute;z-index:50;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--c-primary-light),#8b5cf6,transparent);background-size:200% 100%;animation:pageProgress 1s linear infinite}#pageContent.page-loading::after{content:"正在加载最新数据…";position:absolute;z-index:49;top:12px;right:12px;padding:6px 10px;border-radius:8px;background:rgba(15,23,42,.92);border:1px solid var(--c-line);color:var(--c-text-dim);font-size:11px;box-shadow:var(--shadow)}@keyframes pageProgress{from{background-position:200% 0}to{background-position:-200% 0}}
 .spinner{display:inline-block;width:26px;height:26px;border:3px solid rgba(6,182,212,.2);border-top-color:var(--c-primary);border-radius:50%;animation:spin .55s linear infinite;box-shadow:0 0 16px rgba(6,182,212,.3)}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -390,8 +391,8 @@ function getStatusBadge(status) {
 if (token) {
   JiaruiAPI.auth.me().then(r => {
     if (r.code===200) { currentUser=r.data; showApp(); }
-    else localStorage.removeItem('token');
-  });
+    else { localStorage.removeItem('token'); document.documentElement.classList.remove('session-restoring'); }
+  }).catch(() => document.documentElement.classList.remove('session-restoring'));
 }
 
 async function fetchAPI(url, options={}) {
@@ -518,6 +519,7 @@ function doLogout() { localStorage.removeItem('token'); toast('已退出'); setT
 function showApp() {
   if (currentUser.role==='customer') { location.href = '/client'; return; }
   if (currentUser.role==='driver') { location.href = '/driver'; return; }
+  document.documentElement.classList.remove('session-restoring');
   document.getElementById('loginPage').style.display='none';
   document.getElementById('appPage').style.display='flex';
   document.getElementById('sidebarUserName').textContent = currentUser.displayName;
@@ -537,7 +539,10 @@ function showApp() {
     const page = a.getAttribute('onclick')?.match(/navTo\('(\w+)'\)/)?.[1];
     a.style.display = (page && allowed.includes(page)) ? '' : 'none';
   });
-  navTo('dashboard');
+  const requestedPage = location.hash.slice(1) || localStorage.getItem('staff_last_page') || 'dashboard';
+  const initialPage = allowed.includes(requestedPage) ? requestedPage : 'dashboard';
+  navTo(initialPage);
+  scheduleDataWarmup(allowed, initialPage);
 }
 
 const PAGE_TITLES = {dashboard:'数据看板',waybills:'运单管理',dispatch:'调度派车',finance:'费用对账',customer:'客户管理',fleet:'车辆司机',system:'系统管理',track:'轨迹追踪'};
@@ -552,12 +557,49 @@ const RENDERERS = {
   track:     () => renderTrackSearch()
 };
 
+let currentPage = null;
+let navigationSequence = 0;
+
+function scheduleDataWarmup(allowedPages, initialPage) {
+  const warmers = {
+    dashboard: () => JiaruiAPI.dashboard.getStats(),
+    waybills: () => JiaruiAPI.waybill.list(),
+    dispatch: () => Promise.all([JiaruiAPI.waybill.list(), JiaruiAPI.dispatch.getVehicles(), JiaruiAPI.dispatch.getDrivers()]),
+    finance: () => Promise.all([JiaruiAPI.billing.list(), JiaruiAPI.customer.list(), JiaruiAPI.waybill.list()]),
+    customer: () => JiaruiAPI.customer.list(true),
+    fleet: () => Promise.all([JiaruiAPI.vehicle.list(true), JiaruiAPI.driver.list(true)]),
+    system: () => JiaruiAPI.user.list()
+  };
+  const warm = () => allowedPages.filter(page => page !== initialPage && warmers[page]).forEach((page,index) => {
+    setTimeout(() => Promise.resolve(warmers[page]()).catch(() => {}), index * 180);
+  });
+  if ('requestIdleCallback' in window) requestIdleCallback(warm, {timeout:1200});
+  else setTimeout(warm, 500);
+}
+
 async function navTo(page) {
+  if (!RENDERERS[page]) return;
+  currentPage = page;
+  localStorage.setItem('staff_last_page', page);
+  history.replaceState(null, '', '#'+page);
   document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
   document.getElementById('nav-'+page)?.classList.add('active');
   document.getElementById('pageTitle').textContent = PAGE_TITLES[page];
-  document.getElementById('pageContent').innerHTML = '<div style="text-align:center;padding:50px;color:var(--c-gray-400)">加载中...</div>';
-  document.getElementById('pageContent').innerHTML = await RENDERERS[page]();
+  const content = document.getElementById('pageContent');
+  const sequence = ++navigationSequence;
+  const hasExistingContent = content.innerHTML.trim().length > 0;
+  if (!hasExistingContent) content.innerHTML = '<div style="text-align:center;padding:50px;color:var(--c-gray-400)">正在加载...</div>';
+  const loadingTimer = setTimeout(() => content.classList.add('page-loading'), hasExistingContent ? 160 : 0);
+  try {
+    const html = await RENDERERS[page]();
+    if (sequence !== navigationSequence) return;
+    content.innerHTML = html;
+  } catch (error) {
+    if (sequence === navigationSequence) content.innerHTML = '<div class="empty">加载失败，请稍后重试</div>';
+  } finally {
+    clearTimeout(loadingTimer);
+    if (sequence === navigationSequence) content.classList.remove('page-loading');
+  }
 }
 
 // ==================== Dashboard ====================

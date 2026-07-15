@@ -31,9 +31,11 @@ async function handleRequest(event, context) {
       snapshotDataChanged = true;
     }
     const demoPassword = process.env.SEED_PASSWORD;
-    if (demoPassword && store.db.users.some(user => !user.password_hash || !bcrypt.compareSync(demoPassword, user.password_hash))) {
+    const passwordMigration = demoPassword ? `demo-password-${demoPassword}-v1` : null;
+    if (passwordMigration && !store.db._migrations.includes(passwordMigration)) {
       const passwordHash = bcrypt.hashSync(demoPassword, 10);
       store.db.users.forEach(user => { user.password_hash = passwordHash; });
+      store.db._migrations.push(passwordMigration);
       store.save();
       snapshotDataChanged = true;
     }
