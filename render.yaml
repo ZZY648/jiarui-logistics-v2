@@ -2,7 +2,7 @@ services:
   - type: web
     name: jiarui-logistics
     runtime: node
-    plan: starter
+    plan: free
     rootDir: server
     buildCommand: npm ci
     startCommand: npm start
@@ -16,8 +16,4 @@ services:
       - key: SEED_PASSWORD
         sync: false
       - key: DATA_FILE
-        value: /var/data/data.json
-    disk:
-      name: jiarui-data
-      mountPath: /var/data
-      sizeGB: 1
+        value: /tmp/jiarui-logistics/data.json
