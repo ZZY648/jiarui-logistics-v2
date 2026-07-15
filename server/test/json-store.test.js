@@ -37,3 +37,18 @@ test('continues ids after reload and supports deletion', t => {
   assert.equal(reloaded.deleteById('vehicles', 1), true);
   assert.equal(reloaded.findById('vehicles', 1), undefined);
 });
+
+test('replaces data from a remote snapshot and refreshes ids', t => {
+  const { store } = createTestStore(t);
+  store.insert('customers', { company_name: '本地客户' });
+
+  store.replaceData({
+    customers: [{ id: 8, company_name: '远程客户' }],
+    vehicles: [{ id: 3, plate_number: '粤B90001' }]
+  });
+
+  assert.equal(store.db.customers.length, 1);
+  assert.equal(store.findById('customers', 8).company_name, '远程客户');
+  assert.equal(store.db.users.length, 0);
+  assert.equal(store.insert('customers', { company_name: '新增客户' }).id, 9);
+});

@@ -66,6 +66,17 @@ function createJsonStore(dataFile, logger = console) {
     fs.renameSync(tempFile, dataFile);
   }
 
+  function replaceData(snapshot = {}) {
+    for (const table of Object.keys(db)) {
+      db[table] = Array.isArray(snapshot[table]) ? snapshot[table] : [];
+    }
+    for (const [table, rows] of Object.entries(snapshot)) {
+      if (!(table in db) && Array.isArray(rows)) db[table] = rows;
+    }
+    refreshNextIds();
+    return db;
+  }
+
   function insert(table, record) {
     const rows = ensureTable(table);
     const savedRecord = { ...record, id: nextIds[table]++ };
@@ -106,7 +117,7 @@ function createJsonStore(dataFile, logger = console) {
 
   load();
 
-  return { db, save, insert, findById, findByField, updateById, countByField, deleteById };
+  return { db, save, replaceData, insert, findById, findByField, updateById, countByField, deleteById };
 }
 
 module.exports = { createJsonStore, createEmptyDatabase, DEFAULT_TABLES };

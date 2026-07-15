@@ -1,3 +1,5 @@
+node_modules/
+deno.lock
 .idea/
 .vscode/
 .DS_Store
@@ -5,6 +7,7 @@ Thumbs.db
 
 server/node_modules/
 server/data.json
+server/.data/
 server/data.backup-*.json
 server/.runtime/
 server/.env
@@ -13,3 +16,5 @@ server/*.log
 backend/target/
 tmp/
 *.tmp
+# Local Netlify folder
+.netlify

@@ -843,12 +843,34 @@ app.get('/api/fleet/positions', auth, customerScope, (req, res) => {
 // 前端页面
 app.get('*', (req,res) => res.sendFile(path.join(PUBLIC_DIR,'index.html')));
 
-app.listen(PORT, () => {
-    console.log(`\n========================================`);
-    console.log(`  佳瑞物流管理系统 V2.0 已启动`);
-    console.log(`  端口: ${PORT}`);
-    console.log(`  演示账号: admin / dispatcher / finance`);
-    console.log(`========================================\n`);
-});
+let httpServer;
+
+function startServer() {
+    if (httpServer) return httpServer;
+    httpServer = app.listen(PORT, '0.0.0.0', () => {
+        console.log(`\n========================================`);
+        console.log(`  佳瑞物流管理系统 V2.0 已启动`);
+        console.log(`  端口: ${PORT}`);
+        console.log(`  数据文件: ${DATA_FILE}`);
+        console.log(`  演示账号: admin / dispatcher / finance`);
+        console.log(`========================================\n`);
+    });
+    return httpServer;
+}
+
+function shutdown(signal) {
+    if (!httpServer) return;
+    console.log(`${signal} received, shutting down...`);
+    httpServer.close(() => process.exit(0));
+    setTimeout(() => process.exit(1), 10000).unref();
+}
+
+if (require.main === module) {
+    startServer();
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+}
+
+module.exports = { app, store, startServer };
 
 

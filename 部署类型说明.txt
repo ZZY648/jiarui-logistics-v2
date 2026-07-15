@@ -1,0 +1,18 @@
+这是一个 Node.js / Express 动态网站，不是纯静态网站。
+
+部署时请选择：
+- Node.js Web Service
+- Web Service
+- Docker / Container
+
+不要选择：
+- Static Site
+- 静态网站托管
+- 只上传 HTML/CSS/JS 的页面托管
+
+首页实际文件：server/public/index.html
+启动命令：npm start
+安装命令：npm ci
+健康检查：/health
+
+Express 启动后会自动在网站根路径“/”返回首页，因此 Node 项目根目录不需要 index.html。

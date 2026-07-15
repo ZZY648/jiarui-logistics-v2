@@ -1,0 +1,22 @@
+{
+  "name": "jiarui-logistics-platform",
+  "version": "2.0.0",
+  "private": true,
+  "description": "佳瑞物流管理系统部署入口",
+  "scripts": {
+    "postinstall": "npm --prefix server ci --omit=dev",
+    "start": "node server/server.js",
+    "test": "npm --prefix server test",
+    "build:netlify": "node -e \"console.log('Netlify assets ready')\""
+  },
+  "engines": {
+    "node": ">=20 <25"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^10.7.9",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.22.2",
+    "jsonwebtoken": "^9.0.3",
+    "serverless-http": "^4.0.0"
+  }
+}
