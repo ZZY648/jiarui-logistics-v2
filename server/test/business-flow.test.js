@@ -39,7 +39,7 @@ function request(port, method, requestPath, token, body) {
 }
 
 async function login(port, username) {
-  const response = await request(port, 'POST', '/api/auth/login', null, { username, password: 'jiarui123' });
+  const response = await request(port, 'POST', '/api/auth/login', null, { username, password: 'wuliu123' });
   assert.equal(response.body.code, 200, `${username} 登录失败`);
   return response.body.data.accessToken;
 }

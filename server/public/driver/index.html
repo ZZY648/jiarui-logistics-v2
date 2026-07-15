@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>佳瑞物流 — 司机端</title>
+<title>物流管理平台 — 司机端</title>
 <svg style="display:none"><defs>
   <g id="ic-truck"><rect x="1" y="8" width="14" height="8" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="16" y="5" width="3.5" height="11" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="5" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/></g>
   <g id="ic-pin"><circle cx="10" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 10c-3.5 4-5 7-5 8.5a5 5 0 0 0 10 0c0-1.5-1.5-4.5-5-8.5Z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="7" r="1.2" fill="currentColor"/></g>
@@ -178,11 +178,11 @@ function startTracking(waybillId){
   activeWaybillId=waybillId;gpsReportCount=0;showTripDetail(waybillId);toast('正在请求定位权限…','info');
   gpsWatchId=navigator.geolocation.watchPosition(function(position){
     var speed=position.coords.speed||0;
-    JiaruiAPI.driver.reportGps({waybillId:activeWaybillId,longitude:position.coords.longitude,latitude:position.coords.latitude,speedKmh:speed*3.6,accuracyM:position.coords.accuracy}).then(function(result){
+    JiaruiAPI.driver.reportGps({waybillId:activeWaybillId,longitude:position.coords.longitude,latitude:position.coords.latitude,speedKmh:speed*3.6,accuracyM:position.coords.accuracy,deviceTimestamp:position.timestamp}).then(function(result){
       if(result.code!==200){toast(result.message||'GPS 上报失败','err');return}
       gpsReportCount++;
       var count=document.getElementById('gpsCount');if(count)count.textContent=gpsReportCount;
-      var coords=document.getElementById('gpsLiveCoords');if(coords)coords.innerHTML='当前 <b>'+result.data.longitude.toFixed(6)+'</b>, <b>'+result.data.latitude.toFixed(6)+'</b>';
+      var coords=document.getElementById('gpsLiveCoords');if(coords)coords.innerHTML='当前 <b>'+result.data.longitude.toFixed(6)+'</b>, <b>'+result.data.latitude.toFixed(6)+'</b> · 精度约 '+Math.round(result.data.accuracy_m||0)+' 米';
     }).catch(function(){toast('GPS 上报网络异常','err')});
   },function(error){
     if(error.code===1){stopTracking({silent:true,refresh:false});toast('定位权限被拒绝，请在浏览器设置中允许位置权限','err')}

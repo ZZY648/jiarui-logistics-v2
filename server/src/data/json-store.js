@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { formatLocalTimestamp } = require('../time');
 
 const DEFAULT_TABLES = [
   'users',
@@ -23,7 +24,7 @@ function createEmptyDatabase() {
 }
 
 function timestamp() {
-  return new Date().toISOString().slice(0, 19).replace('T', ' ');
+  return formatLocalTimestamp();
 }
 
 function createJsonStore(dataFile, logger = console) {

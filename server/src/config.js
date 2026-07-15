@@ -1,7 +1,7 @@
 const path = require('path');
 
 const DEFAULT_JWT_SECRET = 'jiarui_logistics_jwt_secret_2024';
-const DEFAULT_SEED_PASSWORD = 'jiarui123';
+const DEFAULT_SEED_PASSWORD = 'wuliu123';
 
 function loadConfig(env = process.env) {
   const defaultDataFile = env.NODE_ENV === 'production'

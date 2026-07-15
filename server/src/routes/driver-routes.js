@@ -1,5 +1,6 @@
 const express = require('express');
 const { wgs84ToGcj02 } = require('../geo/coordinates');
+const { formatLocalTimestamp } = require('../time');
 
 function createDriverRouter({ db, store, auth, hasRole }) {
   const router = express.Router();
@@ -71,7 +72,7 @@ function createGpsRouter({ db, store, auth }) {
 
   router.post('/report', auth, (req, res) => {
     if (req.user.role !== 'driver') return res.json({ code: 403, message: '仅限司机访问' });
-    const { waybillId, longitude, latitude, speedKmh } = req.body;
+    const { waybillId, longitude, latitude, speedKmh, accuracyM, deviceTimestamp } = req.body;
     const driver = db.drivers.find(item => item.user_id === req.user.userId);
     if (!driver) return res.json({ code: 404, message: '司机档案不存在' });
     const parsedWaybillId = parseInt(waybillId);
@@ -80,11 +81,15 @@ function createGpsRouter({ db, store, auth }) {
     if (!['loaded', 'in_transit'].includes(waybill.status)) return res.json({ code: 400, message: '当前运单状态不允许上报定位' });
     const relation = db.waybillVehicles.find(item => item.waybill_id === parsedWaybillId && item.driver_id === driver.id);
     if (!relation) return res.json({ code: 403, message: '你没有该运单的运输权限' });
-    const parsedLatitude = parseFloat(latitude);
-    const parsedLongitude = parseFloat(longitude);
-    if (isNaN(parsedLatitude) || isNaN(parsedLongitude)) return res.json({ code: 400, message: '坐标无效' });
+    const parsedLatitude = Number(latitude);
+    const parsedLongitude = Number(longitude);
+    const parsedAccuracy = Number(accuracyM);
+    const parsedDeviceTimestamp = Number(deviceTimestamp);
+    if (!Number.isFinite(parsedLatitude) || !Number.isFinite(parsedLongitude) || parsedLatitude < -90 || parsedLatitude > 90 || parsedLongitude < -180 || parsedLongitude > 180) return res.json({ code: 400, message: '坐标无效' });
+    if (Number.isFinite(parsedAccuracy) && parsedAccuracy > 1000) return res.json({ code: 400, message: '当前定位精度过低，请移动到开阔位置后重试' });
+    if (Number.isFinite(parsedDeviceTimestamp) && Math.abs(Date.now() - parsedDeviceTimestamp) > 120000) return res.json({ code: 400, message: '定位数据已过期，请重新获取当前位置' });
     const converted = wgs84ToGcj02(parsedLongitude, parsedLatitude);
-    const record = insert('gpsRecords', { vehicle_id: relation.vehicle_id, waybill_id: parsedWaybillId, driver_id: driver.id, longitude: converted.longitude, latitude: converted.latitude, coordinate_system: 'gcj02', accuracy_m: Number(req.body.accuracyM) || null, speed_kmh: parseFloat(speedKmh) || 0, device_time: new Date().toISOString().slice(0, 19).replace('T', ' ') });
+    const record = insert('gpsRecords', { vehicle_id: relation.vehicle_id, waybill_id: parsedWaybillId, driver_id: driver.id, longitude: converted.longitude, latitude: converted.latitude, coordinate_system: 'gcj02', accuracy_m: Number.isFinite(parsedAccuracy) ? parsedAccuracy : null, speed_kmh: Number.isFinite(Number(speedKmh)) ? Math.max(0, Number(speedKmh)) : 0, device_time: formatLocalTimestamp(Number.isFinite(parsedDeviceTimestamp) ? new Date(parsedDeviceTimestamp) : new Date()) });
     return res.json({ code: 200, data: record });
   });
 

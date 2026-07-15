@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>佳瑞物流管理系统 V2.0</title>
+<title>物流管理平台 V2.0</title>
 <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
 <svg style="display:none" aria-hidden="true"><defs>
   <!-- Professional SVG icons (20x20, 1.5px stroke) -->
@@ -265,7 +265,7 @@ td .btn + .btn, td .btn + button {margin-left:6px}
 @media(max-width:760px){.dispatch-select{width:100%;max-width:none}.dispatch-card-row .btn{width:100%}}.coordinate-picker{border:1px solid var(--c-line);border-radius:var(--radius);overflow:hidden;background:rgba(10,16,28,.45)}
 .coordinate-toolbar{display:flex;gap:8px;flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--c-line)}
 .coordinate-toolbar button{min-height:40px}.coordinate-toolbar .active{background:var(--grad-primary);color:#fff;border-color:transparent}
-#waybillCoordinateMap{height:280px;width:100%;background:#dbeafe}.coordinate-help{padding:9px 12px;color:var(--c-text-dim);font-size:12px;line-height:1.55}.coordinate-status{padding:8px 12px;background:rgba(6,182,212,.08);font-size:12px;color:var(--c-primary-light)}.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,14,26,.85);z-index:9998;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:13px;color:var(--c-text-dim);gap:14px;backdrop-filter:blur(6px)}
+#waybillCoordinateMap{height:280px;width:100%;background:#dbeafe}.coordinate-map-shell{position:relative;min-height:280px}.coordinate-map-loading{position:absolute;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;gap:9px;background:rgba(219,234,254,.92);color:#1e3a8a;font-size:13px;font-weight:600;pointer-events:none}.coordinate-map-loading.hidden{display:none}.coordinate-map-loading.error{pointer-events:auto;background:rgba(254,242,242,.94);color:#991b1b}.coordinate-map-loading button{pointer-events:auto}.coordinate-help{padding:9px 12px;color:var(--c-text-dim);font-size:12px;line-height:1.55}.coordinate-status{padding:8px 12px;background:rgba(6,182,212,.08);font-size:12px;color:var(--c-primary-light)}.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,14,26,.85);z-index:9998;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:13px;color:var(--c-text-dim);gap:14px;backdrop-filter:blur(6px)}
 .loading-overlay.hidden{display:none}
 .spinner{display:inline-block;width:26px;height:26px;border:3px solid rgba(6,182,212,.2);border-top-color:var(--c-primary);border-radius:50%;animation:spin .55s linear infinite;box-shadow:0 0 16px rgba(6,182,212,.3)}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -293,8 +293,8 @@ td .btn + .btn, td .btn + button {margin-left:6px}
 <div id="loginPage" class="login-page">
 <div class="login-box">
   <div class="brand">
-    <div class="mark">Jiarui</div>
-    <div class="sub">佳瑞物流管理平台</div>
+    <div class="mark">Logistics</div>
+    <div class="sub">物流管理体验平台</div>
   </div>
   <!-- 身份选择标签 -->
   <div class="role-tabs">
@@ -303,31 +303,22 @@ td .btn + .btn, td .btn + button {margin-left:6px}
     <span class="role-tab" onclick="switchRoleTab('driver',this)">司机端</span>
   </div>
   <div class="field">
-    <input id="loginUser" placeholder="用户名" value="admin" autocomplete="off">
+    <input id="loginUser" placeholder="用户名" autocomplete="username">
     <svg class="ic"><use href="#ic-user"/></svg>
   </div>
   <div class="field">
-    <input id="loginPass" type="password" placeholder="密码" value="jiarui123">
+    <input id="loginPass" type="password" placeholder="密码" autocomplete="current-password">
     <svg class="ic"><use href="#ic-lock"/></svg>
   </div>
   <button onclick="doLogin()" id="loginBtn">登 录</button>
   <div id="loginErr" class="err"></div>
-  <div class="demo-box" id="demoChipsContainer">
-    <div class="title">快捷切换账号</div>
-    <div class="chips" id="demoChips">
-      <span class="demo-chip active" onclick="fillLogin('admin')">admin</span>
-      <span class="demo-chip" onclick="fillLogin('dispatcher')">dispatcher</span>
-      <span class="demo-chip" onclick="fillLogin('finance')">finance</span>
-    </div>
-    <div class="pwd">密码 <code>jiarui123</code></div>
-  </div>
 </div>
 </div>
 
 <!-- ========== Main App ========== -->
 <div id="appPage" class="app" style="display:none">
   <div class="sidebar">
-    <div class="brand"><div class="sb-logo">J</div>佳瑞物流</div>
+    <div class="brand"><div class="sb-logo">L</div>物流管理平台</div>
     <div class="nav" id="sidebarNav">
       <div class="nav-label">业务操作</div>
       <a onclick="navTo('dashboard')" id="nav-dashboard" class="active"><svg><use href="#ic-dashboard"/></svg>数据看板</a>
@@ -488,40 +479,15 @@ function showConfirmModal(title, msg, onConfirm, danger) {
 
 // ==================== Login ====================
 let loginRole = 'staff'; // staff | customer | driver
-const demoAccounts = {
-  staff: [
-    {u:'admin',l:'管理员'},
-    {u:'dispatcher',l:'调度员'},
-    {u:'finance',l:'财务'}
-  ],
-  customer: [
-    {u:'customer1',l:'速达电子'}
-  ],
-  driver: [
-    {u:'driver1',l:'刘师傅'},
-    {u:'driver2',l:'黄师傅'}
-  ]
-};
-
 function switchRoleTab(role, el) {
   loginRole = role;
   document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  // 更新快捷账号
-  const chips = document.getElementById('demoChips');
-  const accounts = demoAccounts[role];
-  chips.innerHTML = accounts.map((a,i) => `<span class="demo-chip${i===0?' active':''}" onclick="fillLogin('${a.u}')">${a.u}</span>`).join('');
-  // 自动填第一个账号
-  if (accounts.length) { document.getElementById('loginUser').value = accounts[0].u; document.getElementById('loginPass').value = 'jiarui123'; }
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').textContent = '';
   // 更新按钮文字
   document.getElementById('loginBtn').textContent = role==='staff'?'登 录':role==='customer'?'进入客户门户':'进入司机端';
-}
-function fillLogin(username) {
-  document.getElementById('loginUser').value = username;
-  document.getElementById('loginPass').value = 'jiarui123';
-  document.querySelectorAll('.demo-chip').forEach(c => {
-    c.classList.toggle('active', c.textContent.trim() === username);
-  });
 }
 async function doLogin() {
   const username = document.getElementById('loginUser').value;
@@ -765,13 +731,35 @@ function setWaybillCoordinate(target,longitude,latitude,source){
   const status=document.getElementById('coordinateStatus');if(status)status.textContent=`${pickup?'提货点':'送货点'}已设置：${Number(longitude).toFixed(6)}, ${Number(latitude).toFixed(6)}（${source}）`;
   if(coordinateMarkers.pickup&&coordinateMarkers.delivery)waybillCoordinateMap.fitBounds(L.featureGroup(Object.values(coordinateMarkers)).getBounds().pad(.2),{maxZoom:16});
 }
-function initWaybillCoordinatePicker(){
-  const mapElement=document.getElementById('waybillCoordinateMap');if(!mapElement||typeof L==='undefined')return;
+function setCoordinateMapLoading(message,state){
+  const loading=document.getElementById('coordinateMapLoading');if(!loading)return;
+  loading.classList.toggle('hidden',state==='hidden');loading.classList.toggle('error',state==='error');
+  loading.innerHTML=state==='error'?`${message}<button type="button" class="btn btn-ghost" onclick="initWaybillCoordinatePicker()">重新加载</button>`:message;
+}
+function refreshWaybillCoordinateMap(){
+  [0,120,350,800].forEach(delay=>setTimeout(()=>{if(waybillCoordinateMap&&document.getElementById('waybillCoordinateMap'))waybillCoordinateMap.invalidateSize({pan:false});},delay));
+}
+function initWaybillCoordinatePicker(attempt=0){
+  const mapElement=document.getElementById('waybillCoordinateMap');
+  if(!mapElement)return;
+  if(typeof L==='undefined'){setCoordinateMapLoading('地图组件加载失败，请刷新页面后重试','error');return;}
+  if((mapElement.clientWidth<100||mapElement.clientHeight<100)&&attempt<20){requestAnimationFrame(()=>setTimeout(()=>initWaybillCoordinatePicker(attempt+1),50));return;}
   if(waybillCoordinateMap){waybillCoordinateMap.remove();coordinateMarkers={};}
-  waybillCoordinateMap=L.map(mapElement,{attributionControl:false,preferCanvas:true}).setView([22.8,113.8],8);
-  L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{subdomains:'1234',maxZoom:18,updateWhenIdle:true}).addTo(waybillCoordinateMap);
+  setCoordinateMapLoading('地图加载中…','loading');
+  waybillCoordinateMap=L.map(mapElement,{attributionControl:false,preferCanvas:true,zoomControl:true}).setView([22.8,113.8],8);
+  let fallbackStarted=false,tileLoaded=false;
+  const addTiles=url=>{
+    const layer=L.tileLayer(url,{subdomains:'1234',maxZoom:18,updateWhenIdle:true,keepBuffer:2,crossOrigin:true});
+    layer.on('tileload',()=>{tileLoaded=true;setCoordinateMapLoading('','hidden');});
+    layer.on('tileerror',()=>{
+      if(!fallbackStarted){fallbackStarted=true;waybillCoordinateMap.removeLayer(layer);addTiles('https://webst0{s}.is.autonavi.com/appmaptile?style=7&x={x}&y={y}&z={z}');}
+    });
+    layer.addTo(waybillCoordinateMap);
+  };
+  addTiles('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}');
+  setTimeout(()=>{if(!tileLoaded)setCoordinateMapLoading('底图网络较慢，可重试加载','error');},5000);
   waybillCoordinateMap.on('click',event=>setWaybillCoordinate(coordinateTarget,event.latlng.lng,event.latlng.lat,'地图选点'));
-  setCoordinateTarget('pickup');setTimeout(()=>waybillCoordinateMap.invalidateSize(),60);
+  setCoordinateTarget('pickup');refreshWaybillCoordinateMap();
 }
 function useCurrentCoordinate(){
   if(!navigator.geolocation){toast('当前浏览器不支持定位','error');return;}
@@ -803,7 +791,7 @@ async function showCreateWaybillModal() {
     {name:'deliveryName',label:'卸货联系人',section:'delivery',_sectionLabel:'卸货信息（终点）',col:6},{name:'deliveryPhone',label:'卸货电话',section:'delivery',col:6},
     {name:'deliveryProvince',label:'卸货省份',value:'广东省',section:'delivery',col:3},{name:'deliveryCity',label:'卸货城市',value:'广州市',section:'delivery',col:3},{name:'deliveryDistrict',label:'卸货区/县',value:'黄埔区',section:'delivery',col:3},{name:'deliveryAddress',label:'卸货详细地址',value:'科学城科林路18号',section:'delivery',col:3},
     {name:'deliveryLongitude',label:'卸货经度（高德）',type:'number',required:true,section:'delivery',col:3},{name:'deliveryLatitude',label:'卸货纬度（高德）',type:'number',required:true,section:'delivery',col:3},
-    {name:'coordinatePicker',type:'html',section:'coordinates',_sectionLabel:'地图精确选点（起点和终点均必须选择）',col:12,html:`<div class="coordinate-picker"><div class="coordinate-toolbar"><button type="button" class="btn btn-primary active" id="pickPickupBtn" onclick="setCoordinateTarget('pickup')">选择提货点</button><button type="button" class="btn btn-ghost" id="pickDeliveryBtn" onclick="setCoordinateTarget('delivery')">选择送货点</button><button type="button" class="btn btn-ghost" onclick="useCurrentCoordinate()">使用当前定位</button></div><div id="waybillCoordinateMap"></div><div class="coordinate-status" id="coordinateStatus">当前正在选择提货点，请在地图上点击真实位置。</div><div class="coordinate-help">地址文字用于业务展示，地图点位用于轨迹起终点。请放大地图后准确点击园区、仓库或门店的真实位置。</div></div>`}
+    {name:'coordinatePicker',type:'html',section:'coordinates',_sectionLabel:'地图精确选点（起点和终点均必须选择）',col:12,html:`<div class="coordinate-picker"><div class="coordinate-toolbar"><button type="button" class="btn btn-primary active" id="pickPickupBtn" onclick="setCoordinateTarget('pickup')">选择提货点</button><button type="button" class="btn btn-ghost" id="pickDeliveryBtn" onclick="setCoordinateTarget('delivery')">选择送货点</button><button type="button" class="btn btn-ghost" onclick="useCurrentCoordinate()">使用当前定位</button></div><div class="coordinate-map-shell"><div id="waybillCoordinateMap"></div><div class="coordinate-map-loading" id="coordinateMapLoading">地图加载中…</div></div><div class="coordinate-status" id="coordinateStatus">当前正在选择提货点，请在地图上点击真实位置。</div><div class="coordinate-help">地址文字用于业务展示，地图点位用于轨迹起终点。请放大地图后准确点击园区、仓库或门店的真实位置。</div></div>`}
   ], async data => {
     if(!data.cargoName){toast('请输入货物名称','warning');return;}if(!data.customerId){toast('请选择客户','warning');return;}
     const weight=parseFloat(data.cargoWeightKg),pickupLongitude=parseFloat(data.pickupLongitude),pickupLatitude=parseFloat(data.pickupLatitude),deliveryLongitude=parseFloat(data.deliveryLongitude),deliveryLatitude=parseFloat(data.deliveryLatitude);
@@ -813,7 +801,7 @@ async function showCreateWaybillModal() {
     const body={customerId:parseInt(data.customerId),cargoName:data.cargoName,cargoType:data.cargoType,cargoWeightKg:weight,cargoVolumeM3:parseFloat(data.cargoVolumeM3)||0,cargoPieces:parseInt(data.cargoPieces)||0,timeRequirement:data.timeRequirement,cargoRemark:data.cargoRemark,pickupStops:[{contactName:data.pickupName,contactPhone:data.pickupPhone,province:data.pickupProvince,city:data.pickupCity,district:data.pickupDistrict,addressDetail:data.pickupAddress,longitude:pickupLongitude,latitude:pickupLatitude}],deliveryStops:[{contactName:data.deliveryName,contactPhone:data.deliveryPhone,province:data.deliveryProvince,city:data.deliveryCity,district:data.deliveryDistrict,addressDetail:data.deliveryAddress,longitude:deliveryLongitude,latitude:deliveryLatitude}]};
     const result=await JiaruiAPI.waybill.create(body);if(result.code===200){toast('运单 '+result.data.waybill_no+' 已创建','success');closeModal();navTo('waybills');}else toast(result.message,'error');
   });
-  setTimeout(initWaybillCoordinatePicker,80);
+  requestAnimationFrame(()=>setTimeout(()=>initWaybillCoordinatePicker(),60));
 }
 async function showWaybillDetail(id) {
   showLoading();
@@ -1370,8 +1358,8 @@ async function searchTrack(presetNo) {
 
   let gpsTable = '';
   if (gps.length) {
-    gpsTable = '<div class="card"><h3>司机实际定位</h3><div class="table-wrap"><table><tr><th>时间</th><th>经度</th><th>纬度</th><th>速度</th><th>来源</th></tr><tbody id="trackGpsTable">'+
-    gps.map(g=>`<tr style="${g.driver_name?'background:rgba(16,185,129,.08)!important':''}"><td>${(g.device_time||'').slice(0,19)}</td><td>${g.longitude?.toFixed(4)}</td><td>${g.latitude?.toFixed(4)}</td><td>${g.speed_kmh?.toFixed(0)||'-'} km/h</td><td>${g.driver_name?'<span style="color:#10b981">📱 '+g.driver_name+'</span>':'<span style="color:#64748b">系统</span>'}</td></tr>`).join('')+'</tbody></table></div></div>';
+    gpsTable = '<div class="card"><h3>司机实际定位</h3><div class="table-wrap"><table><tr><th>时间（北京时间）</th><th>经度</th><th>纬度</th><th>精度</th><th>速度</th><th>来源</th></tr><tbody id="trackGpsTable">'+
+    gps.map(g=>`<tr style="${g.driver_name?'background:rgba(16,185,129,.08)!important':''}"><td>${(g.device_time||'').slice(0,19)}</td><td>${g.longitude?.toFixed(4)}</td><td>${g.latitude?.toFixed(4)}</td><td>${g.accuracy_m?Math.round(g.accuracy_m)+' m':'-'}</td><td>${g.speed_kmh?.toFixed(0)||'-'} km/h</td><td>${g.driver_name?'<span style="color:#10b981">📱 '+g.driver_name+'</span>':'<span style="color:#64748b">系统</span>'}</td></tr>`).join('')+'</tbody></table></div></div>';
   }
 
   const stopsHtml = stops.map((s,i) => `
@@ -1447,7 +1435,7 @@ async function searchTrack(presetNo) {
           if(currentMarker)adminTrackMap.removeLayer(currentMarker);
           if(points.length)currentMarker=L.marker(points[points.length-1],{icon:pulseIcon()}).addTo(adminTrackMap).bindPopup(`<b>司机最新位置</b><br>${latestGps[latestGps.length-1].device_time||''}`);
           const table=document.getElementById('trackGpsTable');
-          if(table)table.innerHTML=latestGps.map(point=>`<tr><td>${(point.device_time||'').slice(0,19)}</td><td>${point.longitude?.toFixed(4)}</td><td>${point.latitude?.toFixed(4)}</td><td>${point.speed_kmh?.toFixed(0)||'-'} km/h</td><td><span style="color:#10b981">${point.driver_name||'司机'}</span></td></tr>`).join('');
+          if(table)table.innerHTML=latestGps.map(point=>`<tr><td>${(point.device_time||'').slice(0,19)}</td><td>${point.longitude?.toFixed(4)}</td><td>${point.latitude?.toFixed(4)}</td><td>${point.accuracy_m?Math.round(point.accuracy_m)+' m':'-'}</td><td>${point.speed_kmh?.toFixed(0)||'-'} km/h</td><td><span style="color:#10b981">${point.driver_name||'司机'}</span></td></tr>`).join('');
         }
         pollCount++;
       },10000);

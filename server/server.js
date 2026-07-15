@@ -13,6 +13,7 @@ const { createVehicleRouter } = require('./src/routes/vehicle-routes');
 const { createDriverRouter, createGpsRouter } = require('./src/routes/driver-routes');
 const { validateOperationalIntegrity } = require('./src/domain/operations-integrity');
 const { buildLinearRoute } = require('./src/geo/coordinates');
+const { formatLocalTimestamp } = require('./src/time');
 
 const app = express();
 const config = loadConfig();
@@ -74,7 +75,7 @@ async function generateGPSPoints(waybillId, vehicleId, fromLng, fromLat, toLng, 
         vehicle_id: vehicleId || null, waybill_id: waybillId,
         longitude: lng, latitude: lat,
         speed_kmh: 50 + Math.floor(Math.random() * 30),
-        device_time: new Date(now - (route.length - i) * 20000).toISOString().slice(0, 19).replace('T', ' ')
+        device_time: formatLocalTimestamp(new Date(now - (route.length - i) * 20000))
       });
     }
     // 确保包含终点
@@ -83,7 +84,7 @@ async function generateGPSPoints(waybillId, vehicleId, fromLng, fromLat, toLng, 
       vehicle_id: vehicleId || null, waybill_id: waybillId,
       longitude: last[0], latitude: last[1],
       speed_kmh: 0,
-      device_time: new Date(now).toISOString().slice(0, 19).replace('T', ' ')
+      device_time: formatLocalTimestamp(new Date(now))
     });
   } else {
     // 回退：直线插值
@@ -96,7 +97,7 @@ async function generateGPSPoints(waybillId, vehicleId, fromLng, fromLat, toLng, 
         longitude: fromLng + (toLng - fromLng) * t + (Math.random() - 0.5) * 0.03,
         latitude: fromLat + (toLat - fromLat) * t + (Math.random() - 0.5) * 0.03,
         speed_kmh: 60 + Math.random() * 20,
-        device_time: new Date(now.getTime() - (steps - i) * 1800000).toISOString().slice(0, 19).replace('T', ' ')
+        device_time: formatLocalTimestamp(new Date(now.getTime() - (steps - i) * 1800000))
       });
     }
   }
@@ -348,7 +349,7 @@ if (DB.users.length === 0) {
     const drvIds = DB.drivers.map(d=>d.id);
     const now = new Date();
     const dateStr = () => new Date().toISOString().slice(0,10).replace(/-/g,'');
-    const nowStr = () => new Date().toISOString().slice(0,19).replace('T',' ');
+    const nowStr = () => formatLocalTimestamp();
 
     // 创建运单的辅助函数
     function createWaybill(custIdx, cargo, weight, fee, status, daysAgo, vehicleIdx, driverIdx) {
@@ -362,9 +363,9 @@ if (DB.users.length === 0) {
         cargo_weight_kg:weight, cargo_volume_m3:weight/200, cargo_pieces:Math.ceil(weight/50),
         time_requirement:status==='urgent'?'urgent':'normal', quoted_fee:fee, status:status,
         dispatch_type:'full_load', settlement_status:'pending', signed_status:status==='signed'||status==='completed'?'signed':'unsigned',
-        created_at: new Date(d.getTime()+600000).toISOString().slice(0,19).replace('T',' '),
-        actual_depart_time:['loaded','in_transit','arrived','signed','completed'].includes(status)?new Date(d.getTime()+3600000).toISOString().slice(0,19).replace('T',' '):null,
-        actual_arrive_time:['arrived','signed','completed'].includes(status)?new Date(d.getTime()+7200000).toISOString().slice(0,19).replace('T',' '):null
+        created_at: formatLocalTimestamp(new Date(d.getTime()+600000)),
+        actual_depart_time:['loaded','in_transit','arrived','signed','completed'].includes(status)?formatLocalTimestamp(new Date(d.getTime()+3600000)):null,
+        actual_arrive_time:['arrived','signed','completed'].includes(status)?formatLocalTimestamp(new Date(d.getTime()+7200000)):null
       });
       // 添加站点
       insert('waybillStops',{waybill_id:wb.id,stop_seq:1,stop_type:'pickup',contact_name:'发货人',contact_phone:'13900000001',province:'广东省',city:'深圳市',district:'宝安区',address_detail:'西乡固戍工业区A栋',status:'completed'});
@@ -401,7 +402,7 @@ if (DB.users.length === 0) {
       }
       // 签收记录
       if (['signed','completed'].includes(status)) {
-        insert('signRecords',{waybill_id:wb.id,sign_type:'electronic',signer_name:'收货人',sign_photo_url:'/signs/'+no+'.png',sign_time:new Date(d.getTime()+7500000).toISOString().slice(0,19).replace('T',' ')});
+        insert('signRecords',{waybill_id:wb.id,sign_type:'electronic',signer_name:'收货人',sign_photo_url:'/signs/'+no+'.png',sign_time:formatLocalTimestamp(new Date(d.getTime()+7500000))});
       }
       return wb;
     }
@@ -546,7 +547,7 @@ const TRANSITIONS = {
 };
 
 function currentTimestamp() {
-    return new Date().toISOString().slice(0,19).replace('T',' ');
+    return formatLocalTimestamp();
 }
 
 function getWaybillAssignments(waybillId) {
@@ -849,7 +850,7 @@ function startServer() {
     if (httpServer) return httpServer;
     httpServer = app.listen(PORT, '0.0.0.0', () => {
         console.log(`\n========================================`);
-        console.log(`  佳瑞物流管理系统 V2.0 已启动`);
+        console.log(`  物流管理平台 V2.0 已启动`);
         console.log(`  端口: ${PORT}`);
         console.log(`  数据文件: ${DATA_FILE}`);
         console.log(`  演示账号: admin / dispatcher / finance`);
